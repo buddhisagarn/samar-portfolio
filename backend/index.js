@@ -5,11 +5,14 @@ const app = express();
 
 app.use(
   cors({
-    origin: "https://samar-portfolio-pearl.vercel.app/",
+    origin: [
+      "http://localhost:5173",
+      "https://samar-portfolio-pearl.vercel.app",
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
 );
-
 app.use(express.json());
 
 app.get("/", (req, res) => {
