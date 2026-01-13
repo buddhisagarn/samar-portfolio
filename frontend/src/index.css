@@ -1,3 +1,28 @@
+/* standar css for the portfolio website */
+
+
+:root {
+  --bg: #eff6ff;
+  --primary: #1d4ed8;
+  --secondary: #93c5fd;
+  --text: #1f2937;
+  --buttonbg: rgb(0, 47, 255);
+
+}
+
+
 body {
-  background: red;
+  background-color: var(--bg);
+  color: var(--text);
+}
+
+
+.btn-primary {
+  background-color: var(--primary);
+  color: white;
+}
+
+
+.card {
+  background-color: var(--secondary);
 }

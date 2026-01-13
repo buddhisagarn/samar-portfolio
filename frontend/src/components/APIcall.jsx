@@ -1,25 +1,30 @@
 import React from "react";
-import { useEffect, useState } from "react";
+// import { useEffect, useState } from "react";
+// eslint-disable-next-line no-unused-vars
+import { motion } from "framer-motion";
 
 const APIcall = () => {
-  const [data, setData] = useState(null);
-  console.log("url:", import.meta.env.VITE_API_URI);
-  useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URI}/api`)
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        alert(data.message);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-  }, []);
+  // const [data, setData] = useState(null);
+  // console.log("url:", import.meta.env.VITE_API_URI);
+  // useEffect(() => {
+  //   fetch(`${import.meta.env.VITE_API_URI}/api`)
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       console.log(data);
+  //       alert(data.message);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching data:", error);
+  //     });
+  // }, []);
   return (
     <div>
-      <p>This is paragraph</p>
+      <motion.div>
+        <div>Hello</div>
+      </motion.div>
+      {/* <p>This is paragraph</p>
       <p>{data}</p>
-      <button onClick={() => setData("Hello World")}>Click</button>
+      <button onClick={() => setData("Hello World")}>Click</button> */}
     </div>
   );
 };
