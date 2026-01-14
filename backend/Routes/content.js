@@ -1,6 +1,6 @@
 import express from "express";
 import Content from "../Models/content.js";
-import { protect } from "../middleware/auth.middleware.js";
+import { protect } from "../middlewares/auth.js";
 import multer from "multer";
 import cloudinary from "cloudinary";
 

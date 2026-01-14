@@ -2,8 +2,8 @@ import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import authRoutes from "./routes/auth.routes.js";
-import contentRoutes from "./routes/content.routes.js";
+import authRoutes from "./Routes/auth.js";
+import contentRoutes from "./Routes/content.js";
 
 dotenv.config();
 
@@ -11,6 +11,7 @@ const app = express();
 
 app.use(
   cors({
+    origin: "http://localhost:5173",
     origin: "https://samar-portfolio-pearl.vercel.app",
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,

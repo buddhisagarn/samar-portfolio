@@ -15,13 +15,13 @@ export default function AdminApp() {
     roles: "",
   });
 
-  // 🔄 Fetch content from DB
+  //  Fetch content from DB
   useEffect(() => {
     if (!isLoggedIn) return;
 
     const fetchContent = async () => {
       try {
-        const res = await API.get("/content");
+        const res = await API.get("/api/content");
         setContent(res.data);
       } catch (err) {
         console.error(err);
@@ -33,7 +33,7 @@ export default function AdminApp() {
     fetchContent();
   }, [isLoggedIn]);
 
-  // 💾 Save updates to DB
+  //  Save updates to DB
   const handleSave = async () => {
     try {
       await API.put("/content", content);

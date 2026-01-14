@@ -75,7 +75,7 @@ export default function AboutSection() {
 
       {/* Footer Note */}
       <div className="mt-16 text-center text-blue-200 text-sm">
-        © {new Date().getFullYear()} • Built with passion & a lot of coffee ☕
+        © {new Date().getFullYear()} • Built with passion & a lot of coffee 
       </div>
     </section>
   );

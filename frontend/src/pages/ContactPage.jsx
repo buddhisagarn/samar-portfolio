@@ -21,7 +21,7 @@ export default function ContactPage() {
             className="text-center mb-14"
           >
             <h1 className="text-4xl md:text-5xl font-bold text-blue-900">
-              Let’s Talk 🤝
+              Let’s Talk 
             </h1>
             <p className="text-blue-700 mt-4 max-w-2xl mx-auto">
               If something here resonated with you — an idea, a project, or just

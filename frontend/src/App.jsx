@@ -9,10 +9,12 @@ import NewsPage from "./pages/News.jsx";
 import ContactPage from "./pages/ContactPage.jsx";
 import BookStorePage from "./pages/MyBooks.jsx";
 import APIcall from "./components/APIcall.jsx";
+import ScrollToTop from "./components/ScrollToTop.jsx";
 
 const App = () => {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<Homepage />} />
         <Route path="/admin" element={<AdminApp />} />
