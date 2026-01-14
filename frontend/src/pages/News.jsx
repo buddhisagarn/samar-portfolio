@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar, Eye, Search, TrendingUp } from "lucide-react";
+// eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 import NavBar from "@/components/NavBar";
 import AboutSection from "@/components/About";
@@ -80,7 +81,7 @@ export default function NewsPage() {
                 placeholder="Search news..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="rounded-xl"
+                className="rounded-xl border-blue-300 border "
               />
             </div>
 

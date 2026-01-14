@@ -133,7 +133,9 @@ function Login({ onLogin }) {
         "https://samar-portfolio-pearl.vercel.app/api/auth/login",
         form,
         {
-          withCredentials: true,
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
       );
       localStorage.setItem("token", res.data.token);
