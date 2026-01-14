@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 import API from "../../api/api";
+import axios from "axios";
 
 export default function AdminApp() {
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
@@ -37,7 +38,7 @@ export default function AdminApp() {
   const handleSave = async () => {
     try {
       await API.put("/content", content);
-      alert("Content updated successfully ✅");
+      alert("Content updated successfully ");
     } catch (err) {
       alert("Update failed ", err);
     }
@@ -128,7 +129,13 @@ function Login({ onLogin }) {
 
   const handleLogin = async () => {
     try {
-      const res = await API.post("/auth/login", form);
+      const res = await axios.post(
+        "https://samar-portfolio-pearl.vercel.app/api/auth/login",
+        form,
+        {
+          withCredentials: true,
+        }
+      );
       localStorage.setItem("token", res.data.token);
       onLogin();
     } catch (err) {
