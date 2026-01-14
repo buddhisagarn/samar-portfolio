@@ -132,7 +132,8 @@ function Login({ onLogin }) {
       localStorage.setItem("token", res.data.token);
       onLogin();
     } catch (err) {
-      setError("Invalid credentials", err);
+      setError("Invalid credentials occur");
+      console.log(err);
     }
   };
 
@@ -151,11 +152,13 @@ function Login({ onLogin }) {
           placeholder="Email"
           className="w-full mb-3 px-4 py-2 border rounded-lg"
           onChange={(e) => setForm({ ...form, email: e.target.value })}
+          required
         />
 
         <input
           type="password"
           placeholder="Password"
+          required
           className="w-full mb-4 px-4 py-2 border rounded-lg"
           onChange={(e) => setForm({ ...form, password: e.target.value })}
         />
