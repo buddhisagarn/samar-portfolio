@@ -2,36 +2,87 @@ import express from "express";
 import Content from "../Models/content.js";
 import { protect } from "../middlewares/auth.js";
 import multer from "multer";
-import cloudinary from "cloudinary";
+import cloudinary from "../config/cloudinary.js";
 
 const router = express.Router();
-const upload = multer({ dest: "uploads/" });
 
-cloudinary.v2.config({
-  cloud_name: process.env.CLOUDINARY_NAME,
-  api_key: process.env.CLOUDINARY_KEY,
-  api_secret: process.env.CLOUDINARY_SECRET,
+/* ---------------- MULTER (memory) ---------------- */
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
 });
 
+/* ---------------- GET CONTENT ---------------- */
 router.get("/", async (req, res) => {
-  const content = await Content.findOne();
-  res.json(content);
+  try {
+    const content = await Content.findOne().select(
+      "-_id name title description years terms roles image",
+    );
+    res.json(content);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
-router.put("/", protect, upload.single("image"), async (req, res) => {
-  const data = req.body;
+/* ---------------- CREATE (ONCE) ---------------- */
+router.post("/", protect, async (req, res) => {
+  try {
+    const existing = await Content.findOne();
+    if (existing) {
+      return res.status(400).json({ message: "Content already exists" });
+    }
 
-  if (req.file) {
-    const result = await cloudinary.v2.uploader.upload(req.file.path);
-    data.image = result.secure_url;
+    const content = await Content.create(req.body);
+    res.status(201).json(content);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
+});
 
-  const updated = await Content.findOneAndUpdate({}, data, {
-    new: true,
-    upsert: true,
-  });
+/* ---------------- UPDATE + IMAGE UPLOAD ---------------- */
+router.put("/", protect, upload.single("image"), async (req, res) => {
+  try {
+    const data = req.body;
 
-  res.json(updated);
+    /* ---------- upload image if exists ---------- */
+    if (req.file) {
+      const uploadResult = await cloudinary.uploader.upload(
+        `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`,
+        {
+          folder: "content", // optional but clean
+        },
+      );
+
+      data.image = uploadResult.secure_url;
+    }
+
+    const updated = await Content.findOneAndUpdate({}, data, {
+      new: true,
+      upsert: true,
+    });
+
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+/* ---------------- PATCH (NO IMAGE) ---------------- */
+router.patch("/", protect, async (req, res) => {
+  try {
+    const updatedContent = await Content.findOneAndUpdate({}, req.body, {
+      new: true,
+      runValidators: true,
+    }).select("-_id -__v -createdAt -updatedAt");
+
+    if (!updatedContent) {
+      return res.status(404).json({ message: "Content not found" });
+    }
+
+    res.json(updatedContent);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 export default router;

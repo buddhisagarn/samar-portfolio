@@ -8,11 +8,12 @@ dotenv.config();
 await mongoose.connect(process.env.MONGO_URI);
 
 const hashedPassword = await bcrypt.hash("admin123", 10);
-
-await Admin.create({
+const password = "Admin123"
+ const data = await Admin.create({
   email: "admin@gmail.com",
-  password: hashedPassword,
+  password
 });
+console.log(data)
 
 console.log("Admin created successfully");
 process.exit();

@@ -7,6 +7,7 @@ import { FaCircleInfo } from "react-icons/fa6";
 import { MdEventAvailable } from "react-icons/md";
 import BookStore from "./buttons/BookStore";
 import { useNavigate } from "react-router-dom";
+import AdminButton from "./buttons/AdminButton.jsx";
 
 const NavBar = () => {
   const [open, setOpen] = useState(false);
@@ -15,6 +16,7 @@ const NavBar = () => {
 
   const handleMenuClick = () => {
     setOpen(!open);
+    console.log("Hello");
   };
 
   useEffect(() => {
@@ -36,7 +38,12 @@ const NavBar = () => {
       <div className="bg-blue-900 text-white p-4 fixed top-0 left-0 right-0 z-50  ">
         <ul className="flex justify-between items-center max-w-7xl mx-auto px-4">
           {/* Logo */}
-          <li className="text-3xl font-bold">Samar Bhattrai</li>
+          <li
+            className="text-3xl font-bold cursor-pointer"
+            onClick={() => navigate("/")}
+          >
+            Samar Bhattrai
+          </li>
 
           {/* Mobile Menu Button */}
           {showMenuIcon && (
@@ -53,12 +60,6 @@ const NavBar = () => {
           {/* Desktop Menu */}
           <li className="hidden min-[900px]:block">
             <ul className="flex gap-10 text-lg">
-              <li
-                className="hover:text-blue-600 cursor-pointer"
-                onClick={() => navigate("/")}
-              >
-                Home
-              </li>
               <li
                 className="hover:text-blue-600 cursor-pointer"
                 onClick={() => navigate("/about")}
@@ -87,11 +88,18 @@ const NavBar = () => {
           </li>
 
           {/* CTA / Book */}
-          <li
-            className="hidden  min-[900px]:block"
-            onClick={() => navigate("/books")}
-          >
-            <BookStore />
+          <li className="hidden  min-[900px]:block">
+            <ul className="flex gap-2">
+              <li onClick={() => navigate("/books")}>
+                <BookStore />
+              </li>
+              {/* <li
+                className="hidden  min-[900px]:block"
+                onClick={() => navigate("/admin-home")}
+              >
+                <AdminButton />
+              </li> */}
+            </ul>
           </li>
         </ul>
       </div>
@@ -102,7 +110,7 @@ const NavBar = () => {
           open ? "max-h-60" : "max-h-0"
         }`}
       >
-        <ul className="flex flex-col gap-4 p-4 md:hidden">
+        <ul className="flex flex-col gap-4 p-4">
           <li
             className="cursor-pointer hover:text-gray-300 flex items-center gap-2"
             onClick={() => navigate("/")}

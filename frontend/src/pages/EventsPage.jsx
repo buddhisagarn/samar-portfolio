@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,70 +13,43 @@ import {
 } from "lucide-react";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
-import AboutPage from "./AboutPage";
-import AboutSection from "@/components/About";
 import NavBar from "@/components/NavBar";
-
-const initialEvents = [
-  {
-    id: 1,
-    title: "Tech Meetup 2026",
-    date: "March 20, 2026",
-    location: "Kathmandu, Nepal",
-    description:
-      "A community-driven meetup to discuss modern web, AI, and startups.",
-    tags: ["Tech", "AI", "Startup"],
-    likes: 12,
-    comments: 3,
-  },
-  {
-    id: 2,
-    title: "Personal Brand Workshop",
-    date: "April 5, 2026",
-    location: "Online (Zoom)",
-    description:
-      "Learn how to build a strong personal brand as a developer or creator.",
-    tags: ["Branding", "Career"],
-    likes: 21,
-    comments: 6,
-  },
-];
+import AboutSection from "@/components/About";
+import axios from "axios";
 
 export default function EventsPage() {
-  const [events, setEvents] = useState(initialEvents);
+  const [events, setEvents] = useState([]);
   const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  const likeEvent = (id) => {
-    setEvents((prev) =>
-      prev.map((e) => (e.id === id ? { ...e, likes: e.likes + 1 } : e))
-    );
-  };
+  /* ---------------- FETCH EVENTS ---------------- */
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/api/events");
+        setEvents(res.data);
+      } catch (err) {
+        console.error("Failed to load events", err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    fetchEvents();
+  }, []);
+
+  /* ---------------- FILTER ---------------- */
   const filteredEvents = events.filter((e) =>
-    e.title.toLowerCase().includes(search.toLowerCase())
+    e.title.toLowerCase().includes(search.toLowerCase()),
   );
 
   return (
     <div>
       <NavBar />
       <div className="min-h-screen bg-linear-to-br from-blue-50 to-blue-100 px-4 py-12 pt-20">
-        <div className="max-w-6xl mx-auto">
-          {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-10"
-          >
-            <h1 className="text-4xl font-bold text-blue-900">
-              Events & Activities
-            </h1>
-            <p className="text-blue-700 mt-2">
-              Things I host, attend, and care about
-            </p>
-          </motion.div>
-
+        <div className="max-w-6xl mx-auto ">
           {/* Search */}
-          <div className="flex items-center gap-2 max-w-md mx-auto mb-10">
+          <div className="flex items-center gap-2 max-w-md  mb-10 mt-5">
             <Search className="text-blue-600" />
             <Input
               placeholder="Search events..."
@@ -86,11 +59,16 @@ export default function EventsPage() {
             />
           </div>
 
+          {/* Loading */}
+          {loading && (
+            <p className="text-center text-blue-700">Loading events...</p>
+          )}
+
           {/* Events Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredEvents.map((event) => (
               <motion.div
-                key={event.id}
+                key={event._id}
                 whileHover={{ scale: 1.02 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
@@ -111,24 +89,21 @@ export default function EventsPage() {
                     <p className="text-blue-800 text-sm">{event.description}</p>
 
                     <div className="flex flex-wrap gap-2">
-                      {event.tags.map((tag) => (
-                        <Badge key={tag} className="bg-blue-100 text-blue-700">
+                      {event.tags?.map((tag, i) => (
+                        <Badge key={i} className="bg-blue-100 text-blue-700">
                           {tag}
                         </Badge>
                       ))}
                     </div>
 
-                    {/* Actions */}
+                    {/* Actions (UI only for now) */}
                     <div className="flex items-center justify-between pt-4 border-t border-blue-100">
                       <div className="flex items-center gap-4 text-blue-700 text-sm">
-                        <button
-                          onClick={() => likeEvent(event.id)}
-                          className="flex items-center gap-1 hover:text-blue-900"
-                        >
-                          <Heart size={16} /> {event.likes}
-                        </button>
                         <div className="flex items-center gap-1">
-                          <MessageCircle size={16} /> {event.comments}
+                          <Heart size={16} /> 0
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <MessageCircle size={16} /> 0
                         </div>
                       </div>
 
@@ -145,22 +120,9 @@ export default function EventsPage() {
             ))}
           </div>
 
-          {/* CTA */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            className="mt-16 text-center"
-          >
-            <h3 className="text-2xl font-semibold text-blue-900">
-              Want to collaborate or attend?
-            </h3>
-            <p className="text-blue-700 mt-2">
-              Reach out and let's build something meaningful together.
-            </p>
-            <Button className="mt-6 rounded-2xl bg-blue-700 hover:bg-blue-800">
-              Contact Me
-            </Button>
-          </motion.div>
+          {!loading && filteredEvents.length === 0 && (
+            <p className="text-center text-blue-700 mt-10">No events found.</p>
+          )}
         </div>
       </div>
       <AboutSection />

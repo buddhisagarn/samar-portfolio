@@ -7,28 +7,40 @@ import { Mail, Phone, MapPin, Send, HeartHandshake } from "lucide-react";
 import { motion } from "framer-motion";
 import NavBar from "@/components/NavBar";
 import AboutSection from "@/components/About";
+import { useEffect, useState } from "react";
+import API from "@/api/api";
 
 export default function ContactPage() {
+  const [name, setName] = useState();
+  const [email, setEmail] = useState();
+  const [message, setMessage] = useState();
+  const [messageinfo, setMessageInfo] = useState([]);
+  const handleSave = async () => {
+    try {
+      await API.post("/messages", { name, email, message });
+      alert("Sent Message successfully");
+    } catch (err) {
+      alert("Failed to send", err);
+    }
+  };
+
+  useEffect(() => {
+    const getMessageInfo = async () => {
+      try {
+        const res = await API.get("/messages/messageinfo");
+        setMessageInfo(res.data);
+        console.log(res.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getMessageInfo();
+  }, []);
   return (
     <div>
       <NavBar />
       <div className="min-h-screen bg-linear-to-br from-blue-50 via-blue-100 to-blue-200 px-4 py-16 pt-20">
         <div className="max-w-5xl mx-auto">
-          {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-14"
-          >
-            <h1 className="text-4xl md:text-5xl font-bold text-blue-900">
-              Let’s Talk 
-            </h1>
-            <p className="text-blue-700 mt-4 max-w-2xl mx-auto">
-              If something here resonated with you — an idea, a project, or just
-              a thought — I’d genuinely love to hear from you.
-            </p>
-          </motion.div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
             {/* Left – Emotional Message */}
             <motion.div
@@ -58,18 +70,22 @@ export default function ContactPage() {
               {/* Contact Info */}
               <Card className="rounded-2xl border-blue-200 shadow-lg">
                 <CardContent className="p-8 space-y-4">
-                  <h3 className="text-xl font-semibold text-blue-900">
-                    Other ways
-                  </h3>
-                  <div className="flex items-center gap-3 text-blue-800">
-                    <Mail size={18} /> youremail@example.com
-                  </div>
-                  <div className="flex items-center gap-3 text-blue-800">
-                    <Phone size={18} /> +977-XXXXXXXX
-                  </div>
-                  <div className="flex items-center gap-3 text-blue-800">
-                    <MapPin size={18} /> Nepal (Remote-friendly)
-                  </div>
+                  {messageinfo.map((msg) => (
+                    <div key={msg._id}>
+                      <h3 className="text-xl font-semibold text-blue-900">
+                        Other ways
+                      </h3>
+                      <div className="flex items-center gap-3 text-blue-800">
+                        <Mail size={18} /> {msg.email}
+                      </div>
+                      <div className="flex items-center gap-3 text-blue-800">
+                        <Phone size={18} /> {msg.contact}
+                      </div>
+                      <div className="flex items-center gap-3 text-blue-800">
+                        <MapPin size={18} /> {msg.location}
+                      </div>
+                    </div>
+                  ))}
                 </CardContent>
               </Card>
             </motion.div>
@@ -85,19 +101,31 @@ export default function ContactPage() {
                   <h2 className="text-2xl font-semibold text-blue-900">
                     Send a message
                   </h2>
-
-                  <Input placeholder="Your name" className="rounded-xl" />
-                  <Input placeholder="Your email" className="rounded-xl" />
+                  <Input
+                    required
+                    placeholder="Your name"
+                    className="rounded-xl"
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                  <Input
+                    required
+                    placeholder="Your email"
+                    className="rounded-xl"
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
                   <Textarea
+                    required
                     placeholder="Tell me what’s on your mind..."
                     rows={5}
                     className="rounded-xl"
+                    onChange={(e) => setMessage(e.target.value)}
                   />
-
-                  <Button className="w-full rounded-2xl bg-blue-700 hover:bg-blue-800">
+                  <Button
+                    className="w-full rounded-2xl bg-blue-700 hover:bg-blue-800"
+                    onClick={handleSave}
+                  >
                     <Send size={16} className="mr-2" /> Send Message
                   </Button>
-
                   <p className="text-xs text-blue-600 text-center">
                     Your message stays private. Always.
                   </p>

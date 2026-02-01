@@ -1,15 +1,45 @@
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 import { FaGithub, FaLinkedin, FaTwitter } from "react-icons/fa";
-import AboutSection from "../components/About";
 import NavBar from "../components/NavBar";
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import API from "@/api/api";
+import AboutSection from "@/components/About";
 
 export default function AboutPage() {
+  const navigate = useNavigate();
+
+  const [aboutData, setAboutData] = useState(null);
+
+  /* ---------------- FETCH FROM DB ---------------- */
+  useEffect(() => {
+    const fetchAbout = async () => {
+      try {
+        const res = await API.get("/about");
+        setAboutData(res.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    fetchAbout();
+  }, []);
+
+  if (!aboutData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Loading...
+      </div>
+    );
+  }
+
   return (
     <div>
       <NavBar />
+
       <section className="min-h-screen bg-linear-to-br from-blue-50 via-blue-100 to-blue-200 text-gray-800">
-        {/* Hero */}
+        {/* ---------------- HERO ---------------- */}
         <div className="max-w-7xl mx-auto px-6 pt-24 pb-16 grid md:grid-cols-2 gap-12 items-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -18,17 +48,15 @@ export default function AboutPage() {
             viewport={{ once: true }}
           >
             <span className="inline-block mb-4 px-4 py-1 text-sm rounded-full bg-blue-100 text-blue-700">
-              About Me
+              {aboutData.title}
             </span>
+
             <h1 className="text-4xl md:text-5xl font-extrabold leading-tight">
-              I build <span className="text-blue-700">clean</span>, scalable &
-              modern web experiences.
+              {aboutData.about}
             </h1>
+
             <p className="mt-6 text-gray-600 max-w-xl">
-              I’m Samar Bhattrai, a passionate developer focused on building
-              performant, user-centric applications. I love turning complex
-              ideas into simple, elegant solutions using modern web
-              technologies.
+              {aboutData.description}
             </p>
 
             {/* Socials */}
@@ -45,7 +73,7 @@ export default function AboutPage() {
             </div>
           </motion.div>
 
-          {/* Image / Card */}
+          {/* ---------------- IMAGE CARD ---------------- */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -55,18 +83,18 @@ export default function AboutPage() {
           >
             <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-8 shadow-xl max-w-sm">
               <img
-                src="/samarProfile.jpg"
-                alt="Samar Bhattrai"
+                src={aboutData.image}
+                alt="About"
                 className="w-full h-72 object-cover rounded-2xl mb-4"
               />
               <p className="text-center text-sm text-gray-600">
-                Developer • MERN • Problem Solver
+                {aboutData.pictitle}
               </p>
             </div>
           </motion.div>
         </div>
 
-        {/* Skills / Values */}
+        {/* ---------------- SKILLS / VALUES ---------------- */}
         <div className="bg-white py-20">
           <div className="max-w-6xl mx-auto px-6">
             <motion.h2
@@ -80,23 +108,14 @@ export default function AboutPage() {
             </motion.h2>
 
             <div className="grid md:grid-cols-3 gap-8">
-              <ValueCard
-                title="Clean Architecture"
-                text="Scalable codebases, readable structure, and maintainable systems that grow with products."
-              />
-              <ValueCard
-                title="User Experience"
-                text="Smooth interactions, responsive layouts, and interfaces that feel natural and intuitive."
-              />
-              <ValueCard
-                title="Continuous Learning"
-                text="Always exploring new tools, patterns, and best practices to stay sharp and relevant."
-              />
+              {aboutData.skill?.map((item, index) => (
+                <ValueCard key={index} title={item.title} text={item.about} />
+              ))}
             </div>
           </div>
         </div>
 
-        {/* Footer CTA */}
+        {/* ---------------- CTA ---------------- */}
         <div className="text-center py-16">
           <h3 className="text-2xl font-semibold mb-4">
             Let’s build something meaningful.
@@ -104,7 +123,10 @@ export default function AboutPage() {
           <p className="text-gray-600 mb-6">
             Open to collaborations, freelance work, and interesting ideas.
           </p>
-          <button className="px-8 py-3 bg-blue-700 text-white rounded-xl shadow hover:bg-blue-800 transition">
+          <button
+            className="px-8 py-3 bg-blue-700 text-white rounded-xl shadow hover:bg-blue-800 transition cursor-pointer"
+            onClick={() => navigate("/contact")}
+          >
             Get in touch
           </button>
         </div>
@@ -114,6 +136,7 @@ export default function AboutPage() {
   );
 }
 
+/* ---------------- VALUE CARD ---------------- */
 function ValueCard({ title, text }) {
   return (
     <motion.div

@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
-// eslint-disable-next-line no-unused-vars
-import { motion } from "framer-motion";
 import API from "../../api/api";
-import axios from "axios";
+import AdminLogin from "./AdminLogin";
 
-export default function AdminApp() {
+export default function AdminHome() {
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
   const [loading, setLoading] = useState(true);
+
   const [content, setContent] = useState({
     name: "",
     title: "",
@@ -16,14 +15,20 @@ export default function AdminApp() {
     roles: "",
   });
 
-  //  Fetch content from DB
+  const [image, setImage] = useState(null);
+  const [preview, setPreview] = useState(null);
+
+  /* ---------------- FETCH CONTENT ---------------- */
   useEffect(() => {
     if (!isLoggedIn) return;
 
     const fetchContent = async () => {
       try {
-        const res = await API.get("/api/content");
+        const res = await API.get("/content");
         setContent(res.data);
+        if (res.data?.image) {
+          setPreview(res.data.image);
+        }
       } catch (err) {
         console.error(err);
       } finally {
@@ -34,13 +39,29 @@ export default function AdminApp() {
     fetchContent();
   }, [isLoggedIn]);
 
-  //  Save updates to DB
+  /* ---------------- SAVE (WITH IMAGE) ---------------- */
   const handleSave = async () => {
     try {
-      await API.put("/content", content);
-      alert("Content updated successfully ");
+      const formData = new FormData();
+
+      Object.keys(content).forEach((key) => {
+        formData.append(key, content[key]);
+      });
+
+      if (image) {
+        formData.append("image", image); //  MUST MATCH BACKEND
+      }
+
+      await API.patch("/content", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      alert("Content updated successfully ✅");
     } catch (err) {
-      alert("Update failed ", err);
+      console.error(err);
+      alert("Update failed ❌");
     }
   };
 
@@ -50,7 +71,7 @@ export default function AdminApp() {
   };
 
   if (!isLoggedIn) {
-    return <Login onLogin={() => setIsLoggedIn(true)} />;
+    return <AdminLogin onLogin={() => setIsLoggedIn(true)} />;
   }
 
   if (loading) {
@@ -58,20 +79,16 @@ export default function AdminApp() {
   }
 
   return (
-    <div className="min-h-screen bg-blue-50 p-6 grid md:grid-cols-2 gap-6">
-      {/* Admin Panel */}
+    <div className="min-h-screen bg-blue-50 grid md:grid-cols-2 gap-6 max-w-6xl mx-auto">
+      {/* ADMIN PANEL */}
       <div className="bg-white rounded-2xl shadow-lg p-6">
-        <h2 className="text-2xl font-bold text-blue-700 mb-4">
-          Admin Dashboard
-        </h2>
-
         {Object.keys(content).map((key) => (
           <div key={key} className="mb-3">
             <label className="block text-sm font-medium text-gray-600 capitalize">
               {key}
             </label>
             <input
-              className="w-full mt-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
+              className="w-full mt-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none overflow-scroll"
               value={content[key]}
               onChange={(e) =>
                 setContent({ ...content, [key]: e.target.value })
@@ -80,10 +97,26 @@ export default function AdminApp() {
           </div>
         ))}
 
+        {/* IMAGE INPUT */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-600">
+            Profile Image
+          </label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              setImage(e.target.files[0]);
+              setPreview(URL.createObjectURL(e.target.files[0]));
+            }}
+            className="mt-1"
+          />
+        </div>
+
         <div className="flex gap-3 mt-4">
           <button
             onClick={handleSave}
-            className="px-4 py-2 bg-blue-700 text-white rounded-lg hover:bg-blue-800"
+            className="px-4 py-2 bg-blue-700 text-white rounded-lg"
           >
             Save Changes
           </button>
@@ -97,8 +130,16 @@ export default function AdminApp() {
         </div>
       </div>
 
-      {/* Live Preview */}
+      {/* LIVE PREVIEW */}
       <div className="bg-white rounded-2xl shadow-lg p-6">
+        {preview && (
+          <img
+            src={preview}
+            alt="preview"
+            className="w-32 h-32 object-cover rounded-full mb-4 border"
+          />
+        )}
+
         <span className="inline-block mb-3 px-3 py-1 text-sm rounded-full bg-blue-100 text-blue-700">
           🇳🇵 Nepalese Politician
         </span>
@@ -119,68 +160,6 @@ export default function AdminApp() {
           <Stat value={content.roles} label="Leadership Roles" />
         </div>
       </div>
-    </div>
-  );
-}
-// login part
-function Login({ onLogin }) {
-  const [form, setForm] = useState({ email: "", password: "" });
-  const [error, setError] = useState("");
-
-  const handleLogin = async () => {
-    try {
-      const res = await axios.post(
-        "https://samar-portfolio-pearl.vercel.app/api/auth/login",
-        form,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      localStorage.setItem("token", res.data.token);
-      onLogin();
-    } catch (err) {
-      setError("Invalid credentials occur");
-      console.log(err);
-    }
-  };
-
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-blue-600 to-blue-900">
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-sm"
-      >
-        <h2 className="text-2xl font-bold text-center text-blue-700 mb-6">
-          Admin Login
-        </h2>
-
-        <input
-          placeholder="Email"
-          className="w-full mb-3 px-4 py-2 border rounded-lg"
-          onChange={(e) => setForm({ ...form, email: e.target.value })}
-          required
-        />
-
-        <input
-          type="password"
-          placeholder="Password"
-          required
-          className="w-full mb-4 px-4 py-2 border rounded-lg"
-          onChange={(e) => setForm({ ...form, password: e.target.value })}
-        />
-
-        {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
-
-        <button
-          onClick={handleLogin}
-          className="w-full py-2 bg-blue-700 text-white rounded-lg hover:bg-blue-800"
-        >
-          Login
-        </button>
-      </motion.div>
     </div>
   );
 }
