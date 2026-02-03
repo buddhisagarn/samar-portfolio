@@ -7,8 +7,8 @@ import { Calendar, MapPin, Heart, MessageCircle, Search } from "lucide-react";
 import { motion } from "framer-motion";
 import NavBar from "@/components/NavBar";
 import AboutSection from "@/components/About";
-import axios from "axios";
 import ShareButton from "@/components/buttons/ShareButton";
+import API from "@/api/api";
 
 export default function EventsPage() {
   const [events, setEvents] = useState([]);
@@ -19,7 +19,7 @@ export default function EventsPage() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/events");
+        const res = await API.get("/events");
         setEvents(res.data);
       } catch (err) {
         console.error("Failed to load events", err);

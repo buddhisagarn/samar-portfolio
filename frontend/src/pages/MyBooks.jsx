@@ -7,15 +7,22 @@ import { Star, BookOpen, ShoppingCart } from "lucide-react";
 import { motion } from "framer-motion";
 import NavBar from "@/components/NavBar";
 import AboutSection from "@/components/About";
+import API from "@/api/api";
 
 export default function BookStorePage() {
   const [books, setBooks] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/books")
-      .then((res) => res.json())
-      .then(setBooks)
-      .catch(console.error);
+    const fetchBooks = async () => {
+      try {
+        const res = await API.get("/books");
+        setBooks(res.data);
+      } catch (err) {
+        console.error("Failed to load events", err);
+      }
+    };
+
+    fetchBooks();
   }, []);
 
   return (

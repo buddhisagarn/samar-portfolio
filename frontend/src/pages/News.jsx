@@ -11,6 +11,7 @@ import NavBar from "@/components/NavBar";
 import AboutSection from "@/components/About";
 import { useNavigate } from "react-router-dom";
 import SubscribeModal from "@/components/buttons/SubscribeButton";
+import API from "@/api/api";
 
 const categories = ["All", "Technology", "Career", "Business"];
 
@@ -31,9 +32,10 @@ export default function NewsPage() {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/news");
-        const data = await res.json();
-        setNews(data);
+        const res = await API.get("/news");
+        // const data = await res.json();
+        setNews(res.data);
+        console.log(res.data);
       } catch (err) {
         console.error(err);
       } finally {
@@ -47,7 +49,7 @@ export default function NewsPage() {
   /*  Increase views */
   const handleRead = async (id) => {
     try {
-      await fetch(`http://localhost:5000/api/news/${id}/view`, {
+      await fetch(`${API}/news/${id}/view`, {
         method: "PATCH",
       });
 
