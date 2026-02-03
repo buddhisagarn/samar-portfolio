@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import API from "@/api/api";
+import { useState } from "react";
 
 const AdminEmailDashboard = () => {
   const [subs, setSubs] = useState([]);
@@ -8,18 +9,14 @@ const AdminEmailDashboard = () => {
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    fetchSubs();
-  }, []);
-
   const fetchSubs = async () => {
-    const res = await fetch("http://localhost:5000/api/admin/subscribers");
+    const res = await API.get("admin/subscribers");
     const data = await res.json();
     setSubs(data);
   };
 
   const deleteSub = async (id) => {
-    await fetch(`http://localhost:5000/api/admin/subscribers/${id}`, {
+    await API.delete(`admin/subscribers/${id}`, {
       method: "DELETE",
     });
     fetchSubs();
@@ -29,7 +26,7 @@ const AdminEmailDashboard = () => {
     setLoading(true);
     setStatus("");
 
-    const res = await fetch("http://localhost:5000/api/admin/send-email", {
+    const res = await API.post("admin/send-email", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ subject, message }),

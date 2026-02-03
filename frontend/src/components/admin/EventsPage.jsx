@@ -7,8 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Trash2, Plus, Edit, Save } from "lucide-react";
 import NavBar from "./AdminNav";
+import API from "@/api/api";
 
-const API = "http://localhost:5000/api/events";
+// const API = "http://localhost:5000/api/events";
 
 export default function AdminEvents() {
   const [events, setEvents] = useState([]);
@@ -24,10 +25,15 @@ export default function AdminEvents() {
 
   /* 📥 Load events */
   useEffect(() => {
-    fetch(API)
-      .then((res) => res.json())
-      .then(setEvents)
-      .catch(console.error);
+    const setEvent = async () => {
+      try {
+        const res = await API.get("/events");
+        setEvents(res.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    setEvent();
   }, []);
 
   const handleChange = (e) => {
@@ -72,7 +78,7 @@ export default function AdminEvents() {
 
   /* 🗑 Delete */
   const deleteEvent = async (id) => {
-    await fetch(`${API}/${id}`, { method: "DELETE" });
+    await fetch(`${API}/events/${id}`, { method: "DELETE" });
     setEvents(events.filter((e) => e._id !== id));
   };
 

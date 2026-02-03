@@ -1,9 +1,9 @@
 import { useState } from "react";
-import axios from "axios";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 import { useAuth } from "./UseAuth.jsx";
 import { useNavigate } from "react-router-dom";
+import API from "@/api/api.js";
 
 export default function AdminLogin() {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -13,11 +13,9 @@ export default function AdminLogin() {
 
   const handleLogin = async () => {
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/auth/login",
-        form,
-        { headers: { "Content-Type": "application/json" } },
-      );
+      const res = await API.post("/auth/login", form, {
+        headers: { "Content-Type": "application/json" },
+      });
 
       login(res.data.token);
       navigate("/admin-home");

@@ -5,9 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Trash2, Save, TrendingUp } from "lucide-react";
-import NavBar from "./AdminNav";
+import API from "@/api/api";
 
-const API = "http://localhost:5000/api/news";
+// const API = "http://localhost:5000/api/news";
 
 export default function AdminNews() {
   const [news, setNews] = useState([]);
@@ -21,21 +21,26 @@ export default function AdminNews() {
     trending: false,
   });
 
-  /* 📥 Load news */
+  /*  Load news */
   useEffect(() => {
-    fetch(API)
-      .then((res) => res.json())
-      .then(setNews)
-      .catch(console.error);
+    const newFunction = async () => {
+      try {
+        const res = await API.get("/news");
+        setNews(res.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    newFunction();
   }, []);
 
-  /* 🔄 Handle form */
+  /*  Handle form */
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setForm({ ...form, [name]: type === "checkbox" ? checked : value });
   };
 
-  /* ➕ Add or ✏️ Update */
+  /*  Add or  Update */
   const saveNews = async () => {
     if (!form.title || !form.category) return;
 
@@ -59,7 +64,7 @@ export default function AdminNews() {
     resetForm();
   };
 
-  /* ✏️ Edit */
+  /*  Edit */
   const editNews = (n) => {
     setEditingId(n._id);
     setForm({
@@ -71,7 +76,7 @@ export default function AdminNews() {
     });
   };
 
-  /* 🗑 Delete */
+  /*  Delete */
   const deleteNews = async (id) => {
     await fetch(`${API}/${id}`, { method: "DELETE" });
     setNews(news.filter((n) => n._id !== id));
