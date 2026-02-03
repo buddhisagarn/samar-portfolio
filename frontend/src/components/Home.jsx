@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
 import API from "../api/api";
-import { useNavigate } from "react-router-dom";
 import LearnMoreSection from "./lightCard/LearnMore";
 import GetInvolvedSection from "./lightCard/GetInvolved";
 
 const Home = () => {
-  const navigate = useNavigate();
   const [content, setContent] = useState([]);
   const [showModel, setShowModel] = useState(false);
   const [showLearn, setShowLearn] = useState(false);

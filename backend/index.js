@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import nodemailer from "nodemailer";
+import cors from "cors";
 
 // Routes
 import authRoutes from "./Routes/auth.js";
@@ -17,37 +18,26 @@ import AdminSubscriber from "./Routes/adminRoutes.js";
 // Models
 import Subscriber from "./Models/subscriber.js";
 
-dotenv.config();
-
 const app = express();
-
 /* ================================
    ✅ CORS (Vercel-safe + frontend)
 ================================ */
-app.use((req, res, next) => {
-  const allowedOrigins = [
-    "http://localhost:5173",
-    "https://samar-portfolio-pearl.vercel.app",
-  ];
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://samar-portfolio-pearl.vercel.app",
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  }),
+);
 
-  const origin = req.headers.origin;
+// IMPORTANT: handle preflight
+app.options("*", cors());
 
-  if (!origin || allowedOrigins.includes(origin)) {
-    res.setHeader("Access-Control-Allow-Origin", origin || "*");
-  }
-
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET,POST,PUT,DELETE,PATCH,OPTIONS",
-  );
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
-  if (req.method === "OPTIONS") {
-    return res.status(200).end();
-  }
-
-  next();
-});
+dotenv.config();
 
 app.use(express.json());
 
