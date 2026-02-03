@@ -17,13 +17,9 @@ import AdminEvents from "./components/admin/EventsPage.jsx";
 import AdminContact from "./components/admin/AdminContact.jsx";
 import AdminAbout from "./components/admin/AdminAbout.jsx";
 import AdminNews from "./components/admin/AdminNews.jsx";
-import LearnMoreSection from "./components/lightCard/LearnMore.jsx";
-import GetInvolvedSection from "./components/lightCard/GetInvolved.jsx";
 import AdminLayout from "./components/admin/AdminLayout.jsx";
 import TrendingTechnology from "./components/lightCard/TrendingTech.jsx";
 import ReadArticle from "./components/lightCard/ReadArticle.jsx";
-import Subscribe from "./components/buttons/SubscribeButton.jsx";
-import SubscribeModal from "./components/buttons/SubscribeButton.jsx";
 import AdminEmailDashboard from "./components/admin/AdminEmailDashboard.jsx";
 
 const App = () => {
