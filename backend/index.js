@@ -1,6 +1,9 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import nodemailer from "nodemailer";
+
+// Routes
 import authRoutes from "./Routes/auth.js";
 import contentRoutes from "./Routes/content.js";
 import messageRoutes from "./Routes/MessageRoutes.js";
@@ -8,11 +11,19 @@ import aboutRoutes from "./Routes/about.js";
 import bookRoutes from "./Routes/book.js";
 import newsRoutes from "./Routes/news.js";
 import eventsRoutes from "./Routes/events.js";
+import subscribeRoutes from "./Routes/subscribe.js";
+import AdminSubscriber from "./Routes/adminRoutes.js";
+
+// Models
+import Subscriber from "./Models/subscriber.js";
 
 dotenv.config();
+
 const app = express();
 
-//  Manual CORS (Vercel-safe)
+/* ================================
+   ✅ CORS (Vercel-safe + frontend)
+================================ */
 app.use((req, res, next) => {
   const allowedOrigins = [
     "http://localhost:5173",
@@ -20,8 +31,9 @@ app.use((req, res, next) => {
   ];
 
   const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
-    res.setHeader("Access-Control-Allow-Origin", origin);
+
+  if (!origin || allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin || "*");
   }
 
   res.setHeader(
@@ -39,41 +51,102 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 
-// ---- MongoDB connection (serverless-safe) ----
-let isConnected = false;
+/* ================================
+   ✅ MongoDB (Serverless cached)
+================================ */
+let cached = global.mongoose;
 
-async function connectDB() {
-  if (isConnected) return;
-  await mongoose.connect(process.env.MONGO_URI);
-  isConnected = true;
-  console.log("MongoDB connected");
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
 }
 
-app.use(async (req, res, next) => {
-  await connectDB();
-  next();
-});
+async function connectDB() {
+  if (cached.conn) return cached.conn;
 
-// Routes
-app.use("/api/auth", authRoutes);
-app.use("/api/content", contentRoutes);
+  if (!cached.promise) {
+    cached.promise = mongoose
+      .connect(process.env.MONGO_URI, {
+        bufferCommands: false,
+      })
+      .then((mongoose) => mongoose);
+  }
 
+  cached.conn = await cached.promise;
+  console.log("MongoDB connected");
+  return cached.conn;
+}
+
+// ⬅️ IMPORTANT: connect once at startup
+await connectDB();
+
+/* ================================
+   ✅ Routes
+================================ */
 app.get("/", (req, res) => {
   res.send("API running successfully");
 });
+
+app.use("/api/auth", authRoutes);
+app.use("/api/content", contentRoutes);
 app.use("/api/messages", messageRoutes);
-
 app.use("/api/about", aboutRoutes);
-
 app.use("/api/books", bookRoutes);
-
 app.use("/api/news", newsRoutes);
-
 app.use("/api/events", eventsRoutes);
+app.use("/api", subscribeRoutes);
+app.use("/api/admin", AdminSubscriber);
 
-if (process.env.NODE_ENV !== "production") {
-  const PORT = process.env.PORT || 5000;
-  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-}
+/* ================================
+   ✅ Admin APIs
+================================ */
+app.get("/api/admin/subscribers", async (req, res) => {
+  try {
+    const subscribers = await Subscriber.find().sort({
+      subscribedAt: -1,
+    });
+    res.json(subscribers);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch subscribers" });
+  }
+});
 
+/* ================================
+   ✅ Email API (Gmail)
+================================ */
+app.post("/api/admin/send-email", async (req, res) => {
+  try {
+    const { subject, message } = req.body;
+
+    const subscribers = await Subscriber.find();
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.ADMIN_EMAIL,
+        pass: process.env.ADMIN_EMAIL_PASS,
+      },
+    });
+
+    for (const sub of subscribers) {
+      await transporter.sendMail({
+        from: `"Portfolio" <${process.env.ADMIN_EMAIL}>`,
+        to: sub.email,
+        subject,
+        html: `
+          <h2>${subject}</h2>
+          <p>${message}</p>
+        `,
+      });
+    }
+
+    res.json({ message: "Emails sent successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Email sending failed" });
+  }
+});
+
+/* ================================
+   ✅ Export for Vercel
+================================ */
 export default app;

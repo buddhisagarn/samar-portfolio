@@ -10,6 +10,7 @@ import { motion } from "framer-motion";
 import NavBar from "@/components/NavBar";
 import AboutSection from "@/components/About";
 import { useNavigate } from "react-router-dom";
+import SubscribeModal from "@/components/buttons/SubscribeButton";
 
 const categories = ["All", "Technology", "Career", "Business"];
 
@@ -19,8 +20,14 @@ export default function NewsPage() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const [showModel, setShowModel] = useState(false);
 
-  /* 📥 Fetch news from backend */
+  //function for showing subscribe card
+  // const showSubscribe = () => {
+
+  // }
+
+  /*  Fetch news from backend */
   useEffect(() => {
     const fetchNews = async () => {
       try {
@@ -66,7 +73,6 @@ export default function NewsPage() {
   return (
     <div>
       <NavBar />
-
       <div className="min-h-screen bg-linear-to-br from-blue-50 to-blue-100 px-4 py-12 pt-20">
         <div className="max-w-6xl mx-auto">
           {/* Search + Filters */}
@@ -158,7 +164,10 @@ export default function NewsPage() {
             <p className="text-blue-700 mt-2">
               Subscribe or follow me for regular updates.
             </p>
-            <Button className="mt-6 rounded-2xl bg-blue-700 hover:bg-blue-800">
+            <Button
+              className="mt-6 rounded-2xl bg-blue-700 hover:bg-blue-800"
+              onClick={() => setShowModel(true)}
+            >
               Subscribe
             </Button>
           </motion.div>
@@ -166,6 +175,7 @@ export default function NewsPage() {
       </div>
 
       <AboutSection />
+      {showModel && <SubscribeModal onClose={() => setShowModel(false)} />}
     </div>
   );
 }

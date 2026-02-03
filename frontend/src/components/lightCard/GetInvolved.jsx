@@ -1,15 +1,15 @@
 import { useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
-const GetInvolvedSection = () => {
+const GetInvolvedSection = ({ onClose }) => {
   const navigate = useNavigate();
   return (
-    <section className="relative min-h-screen flex items-center justify-center px-4 sm:px-8 bg-linear-to-br from-blue-50 via-blue-100 to-blue-200 overflow-hidden">
+    <section className="fixed inset-0 z-50 flex items-center justify-center bg-blue-900/40 backdrop-blur-md animate-fadeIn">
       {/* Background Blur Elements */}
       <div className="absolute -top-30 -left-30 w-96 h-96 bg-blue-500/30 rounded-full blur-3xl"></div>
       <div className="absolute -bottom-30 -right-30 w-96 h-96 bg-blue-700/30 rounded-full blur-3xl"></div>
 
       {/* Main Card */}
-      <div className="relative w-full max-w-5xl  backdrop-blur-2xl rounded-3xl shadow-2xl border border-blue-200 p-6 ">
+      <div className="relative w-full max-w-5xl  backdrop-blur-2xl rounded-3xl shadow-2xl border border-blue-200 p-6 bg-white ">
         {/* Header */}
         <div className="mb-4">
           <h2 className="text-2xl sm:text-1xl lg:text-3xl font-semibold text-blue-700 mb-2">
@@ -67,16 +67,17 @@ const GetInvolvedSection = () => {
           <button className="px-5 py-2.5 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 transition shadow-md cursor-pointer">
             Start a Conversation
           </button>
-          <button className="px-5 py-2.5 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 transition shadow-md cursor-pointer">
+          <button
+            className="px-5 py-2.5 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 transition shadow-md cursor-pointer"
+            onClick={() => navigate("/contact")}
+          >
             View My Work
           </button>
           <button
-            className="px-5 py-2.5 rounded-xl border border-blue-600 text-blue-600 font-medium hover:bg-blue-50 transition cursor-pointer flex items-center gap-2"
-            onClick={() => navigate("/")}
+            onClick={onClose}
+            className="absolute right-4 top-4 text-gray-400 hover:text-gray-600"
           >
-            {" "}
-            <FaArrowLeft />
-            Back Home
+            ✕
           </button>
         </div>
       </div>

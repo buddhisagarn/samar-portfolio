@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from "react";
 import API from "../api/api";
 import { useNavigate } from "react-router-dom";
+import LearnMoreSection from "./lightCard/LearnMore";
+import GetInvolvedSection from "./lightCard/GetInvolved";
 
 const Home = () => {
   const navigate = useNavigate();
   const [content, setContent] = useState([]);
+  const [showModel, setShowModel] = useState(false);
+  const [showLearn, setShowLearn] = useState(false);
   useEffect(() => {
     const fetchContent = async () => {
       try {
@@ -16,6 +20,7 @@ const Home = () => {
     };
     fetchContent();
   }, []);
+  console.log(import.meta.env.VITE_API_URI);
 
   return (
     <div
@@ -53,13 +58,13 @@ const Home = () => {
             <div className="mt-10 flex gap-4">
               <button
                 className="px-6 py-3 bg-blue-700 text-white rounded-lg shadow hover:bg-blue-800 transition cursor-pointer"
-                onClick={() => navigate("/learn-more")}
+                onClick={() => setShowModel(true)}
               >
                 Learn More
               </button>
               <button
                 className="px-6 py-3 border border-blue-700 text-blue-700 rounded-lg hover:bg-blue-50 transition cursor-pointer"
-                onClick={() => navigate("/get-involved")}
+                onClick={() => setShowLearn(true)}
               >
                 Get Involved
               </button>
@@ -100,6 +105,8 @@ const Home = () => {
           </p>
         </div>
       </section>
+      {showModel && <LearnMoreSection onClose={() => setShowModel(false)} />}
+      {showLearn && <GetInvolvedSection onClose={() => setShowLearn(false)} />}
     </div>
   );
 };

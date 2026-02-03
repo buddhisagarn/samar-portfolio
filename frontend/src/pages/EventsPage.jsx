@@ -1,21 +1,14 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import {
-  Calendar,
-  MapPin,
-  Heart,
-  MessageCircle,
-  Share2,
-  Search,
-} from "lucide-react";
+import { Calendar, MapPin, Heart, MessageCircle, Search } from "lucide-react";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 import NavBar from "@/components/NavBar";
 import AboutSection from "@/components/About";
 import axios from "axios";
+import ShareButton from "@/components/buttons/ShareButton";
 
 export default function EventsPage() {
   const [events, setEvents] = useState([]);
@@ -107,12 +100,12 @@ export default function EventsPage() {
                         </div>
                       </div>
 
-                      <Button
-                        variant="outline"
-                        className="rounded-xl border-blue-300 text-blue-700 hover:bg-blue-50"
-                      >
-                        <Share2 size={16} className="mr-1" /> Share
-                      </Button>
+                      {/* */}
+                      <ShareButton
+                        title={event.title}
+                        description={event.description}
+                        url={`localhost:5173/events/${event.slug}`}
+                      />
                     </div>
                   </CardContent>
                 </Card>

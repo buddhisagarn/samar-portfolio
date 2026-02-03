@@ -22,6 +22,9 @@ import GetInvolvedSection from "./components/lightCard/GetInvolved.jsx";
 import AdminLayout from "./components/admin/AdminLayout.jsx";
 import TrendingTechnology from "./components/lightCard/TrendingTech.jsx";
 import ReadArticle from "./components/lightCard/ReadArticle.jsx";
+import Subscribe from "./components/buttons/SubscribeButton.jsx";
+import SubscribeModal from "./components/buttons/SubscribeButton.jsx";
+import AdminEmailDashboard from "./components/admin/AdminEmailDashboard.jsx";
 
 const App = () => {
   return (
@@ -36,8 +39,6 @@ const App = () => {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/books" element={<BookStorePage />} />
         <Route path="/apicall" element={<APIcall />} />
-        <Route path="/learn-more" element={<LearnMoreSection />} />
-        <Route path="/get-involved" element={<GetInvolvedSection />} />
         <Route path="/trending-tech" element={<TrendingTechnology />} />
         <Route path="/articles/:id" element={<ReadArticle />} />
 
@@ -100,6 +101,16 @@ const App = () => {
             <ProtectedRoute>
               <AdminLayout>
                 <AdminBook />
+              </AdminLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin-subscribe"
+          element={
+            <ProtectedRoute>
+              <AdminLayout>
+                <AdminEmailDashboard />
               </AdminLayout>
             </ProtectedRoute>
           }
