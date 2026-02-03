@@ -153,4 +153,8 @@ app.post("/api/admin/send-email", async (req, res) => {
 /* ================================
     Export for Vercel
 ================================ */
+const PORT = 5000;
+app.listen(PORT, () => {
+  console.log("APi is running");
+});
 export default app;
