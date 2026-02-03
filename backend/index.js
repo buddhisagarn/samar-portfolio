@@ -20,7 +20,7 @@ import Subscriber from "./Models/subscriber.js";
 
 const app = express();
 /* ================================
-   ✅ CORS (Vercel-safe + frontend)
+    CORS (Vercel-safe + frontend)
 ================================ */
 app.use(
   cors({
@@ -42,7 +42,7 @@ dotenv.config();
 app.use(express.json());
 
 /* ================================
-   ✅ MongoDB (Serverless cached)
+    MongoDB (Serverless cached)
 ================================ */
 let cached = global.mongoose;
 
@@ -66,12 +66,15 @@ async function connectDB() {
   return cached.conn;
 }
 
-// ⬅️ IMPORTANT: connect once at startup
+// ⬅ IMPORTANT: connect once at startup
 await connectDB();
 
 /* ================================
-   ✅ Routes
+    Routes
 ================================ */
+app.get("/check", (req, res) => {
+  res.send("API running successfully on Check");
+});
 app.get("/", (req, res) => {
   res.send("API running successfully");
 });
@@ -87,7 +90,7 @@ app.use("/api", subscribeRoutes);
 app.use("/api/admin", AdminSubscriber);
 
 /* ================================
-   ✅ Admin APIs
+    Admin APIs
 ================================ */
 app.get("/api/admin/subscribers", async (req, res) => {
   try {
@@ -101,7 +104,7 @@ app.get("/api/admin/subscribers", async (req, res) => {
 });
 
 /* ================================
-   ✅ Email API (Gmail)
+    Email API (Gmail)
 ================================ */
 app.post("/api/admin/send-email", async (req, res) => {
   try {
@@ -137,6 +140,6 @@ app.post("/api/admin/send-email", async (req, res) => {
 });
 
 /* ================================
-   ✅ Export for Vercel
+    Export for Vercel
 ================================ */
 export default app;
