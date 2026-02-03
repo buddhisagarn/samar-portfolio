@@ -6,7 +6,7 @@ import {
   deleteNews,
   increaseViews,
   getSingleArticle,
-} from "../controllers/news.js";
+} from "../Controllers/news.js";
 
 const router = express.Router();
 
