@@ -22,12 +22,23 @@ const app = express();
 /* ================================
     CORS (Vercel-safe + frontend)
 ================================ */
+// app.use(
+//   cors({
+//     origin: [
+//       "http://localhost:5173",
+//       "https://samar-portfolio-pearl.vercel.app",
+//       "https://samar-portfolio-hdd6.vercel.app",
+//     ],
+//     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+//     allowedHeaders: ["Content-Type", "Authorization"],
+//     credentials: true,
+//   }),
+// );
+app.use(cors());
+
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "https://samar-portfolio-pearl.vercel.app",
-    ],
+    origin: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
@@ -35,7 +46,7 @@ app.use(
 );
 
 // IMPORTANT: handle preflight
-app.options("*", cors());
+// app.options("*", cors());
 
 dotenv.config();
 
