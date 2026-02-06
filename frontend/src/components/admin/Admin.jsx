@@ -1,7 +1,35 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import API from "../../api/api";
 import AdminLogin from "./AdminLogin";
 
+/* ---------------- AUTO GROW TEXTAREA ---------------- */
+function AutoGrowTextarea({ label, value, onChange }) {
+  const ref = useRef(null);
+
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.style.height = "auto";
+      ref.current.style.height = ref.current.scrollHeight + "px";
+    }
+  }, [value]);
+
+  return (
+    <div className="mb-3">
+      <label className="block text-sm font-medium text-gray-600 capitalize">
+        {label}
+      </label>
+      <textarea
+        ref={ref}
+        rows={1}
+        value={value}
+        onChange={onChange}
+        className="w-full mt-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none resize-none overflow-hidden"
+      />
+    </div>
+  );
+}
+
+/* ---------------- MAIN COMPONENT ---------------- */
 export default function AdminHome() {
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
   const [loading, setLoading] = useState(true);
@@ -26,9 +54,7 @@ export default function AdminHome() {
       try {
         const res = await API.get("/content");
         setContent(res.data);
-        if (res.data?.image) {
-          setPreview(res.data.image);
-        }
+        if (res.data?.image) setPreview(res.data.image);
       } catch (err) {
         console.error(err);
       } finally {
@@ -39,29 +65,25 @@ export default function AdminHome() {
     fetchContent();
   }, [isLoggedIn]);
 
-  /* ---------------- SAVE (WITH IMAGE) ---------------- */
+  /* ---------------- SAVE ---------------- */
   const handleSave = async () => {
     try {
       const formData = new FormData();
 
-      Object.keys(content).forEach((key) => {
-        formData.append(key, content[key]);
+      Object.entries(content).forEach(([key, value]) => {
+        formData.append(key, value);
       });
 
-      if (image) {
-        formData.append("image", image); //  MUST MATCH BACKEND
-      }
+      if (image) formData.append("image", image);
 
-      await API.patch("/content", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+      await API.put("/content", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
-      alert("Content updated successfully ✅");
+      alert("Content updated successfully");
     } catch (err) {
       console.error(err);
-      alert("Update failed ❌");
+      alert("Update failed");
     }
   };
 
@@ -70,31 +92,23 @@ export default function AdminHome() {
     setIsLoggedIn(false);
   };
 
-  if (!isLoggedIn) {
-    return <AdminLogin onLogin={() => setIsLoggedIn(true)} />;
-  }
-
-  if (loading) {
+  /* ---------------- GUARDS ---------------- */
+  if (!isLoggedIn) return <AdminLogin onLogin={() => setIsLoggedIn(true)} />;
+  if (loading)
     return <div className="p-10 text-center">Loading content...</div>;
-  }
 
+  /* ---------------- RENDER ---------------- */
   return (
-    <div className="min-h-screen bg-blue-50 grid md:grid-cols-2 gap-6 max-w-6xl mx-auto">
+    <div className="min-h-screen bg-blue-50 grid md:grid-cols-2 gap-6 max-w-6xl mx-auto p-4">
       {/* ADMIN PANEL */}
       <div className="bg-white rounded-2xl shadow-lg p-6">
         {Object.keys(content).map((key) => (
-          <div key={key} className="mb-3">
-            <label className="block text-sm font-medium text-gray-600 capitalize">
-              {key}
-            </label>
-            <input
-              className="w-full mt-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none overflow-scroll"
-              value={content[key]}
-              onChange={(e) =>
-                setContent({ ...content, [key]: e.target.value })
-              }
-            />
-          </div>
+          <AutoGrowTextarea
+            key={key}
+            label={key}
+            value={content[key]}
+            onChange={(e) => setContent({ ...content, [key]: e.target.value })}
+          />
         ))}
 
         {/* IMAGE INPUT */}
@@ -105,11 +119,11 @@ export default function AdminHome() {
           <input
             type="file"
             accept="image/*"
+            className="mt-1"
             onChange={(e) => {
               setImage(e.target.files[0]);
               setPreview(URL.createObjectURL(e.target.files[0]));
             }}
-            className="mt-1"
           />
         </div>
 
@@ -164,6 +178,7 @@ export default function AdminHome() {
   );
 }
 
+/* ---------------- STAT ---------------- */
 function Stat({ value, label }) {
   return (
     <div className="bg-blue-50 px-4 py-3 rounded-xl text-center">

@@ -42,7 +42,7 @@ const NavBar = () => {
             className="text-3xl font-bold cursor-pointer"
             onClick={() => navigate("/")}
           >
-            Samar Bhattrai
+            Krishna Prasad Poudel
           </li>
 
           {/* Mobile Menu Button */}

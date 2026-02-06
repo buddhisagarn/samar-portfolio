@@ -74,13 +74,13 @@ const Home = () => {
         <div className="flex justify-center md:justify-end">
           <div className="relative">
             <img
-              src="/about.jpg"
-              alt="Giriraj Mani Pokhrel"
+              src={content.image}
+              alt="Krishna prasad Poudel"
               className="w-72 md:w-96 md:h-96 rounded-2xl shadow-xl object-cover"
             />
             <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-sm p-3 rounded-b-2xl">
-              Samar Prasad Bhattarai – Senior Developer and Project manager in
-              Google
+              Honourable Krishna Prasad Poudel serves as a member of Nepal’s
+              National Assembly, representing the CPN-UML.
             </div>
           </div>
         </div>

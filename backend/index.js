@@ -14,6 +14,7 @@ import newsRoutes from "./Routes/news.js";
 import eventsRoutes from "./Routes/events.js";
 import subscribeRoutes from "./Routes/subscribe.js";
 import AdminSubscriber from "./Routes/adminRoutes.js";
+import getInvolvedRoutes from "./Routes/getInvolved.js";
 
 // Models
 import Subscriber from "./Models/subscriber.js";
@@ -99,6 +100,7 @@ app.use("/api/news", newsRoutes);
 app.use("/api/events", eventsRoutes);
 app.use("/api", subscribeRoutes);
 app.use("/api/admin", AdminSubscriber);
+app.use("/api/get-involved", getInvolvedRoutes);
 
 /* ================================
     Admin APIs
