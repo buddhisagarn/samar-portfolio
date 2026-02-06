@@ -33,7 +33,7 @@ const Home = () => {
         {content && (
           <div>
             <span className="inline-block mb-4 px-3 py-1 text-sm rounded-full bg-blue-100 text-blue-700">
-              🇳🇵 Nepalese Developer
+              🇳🇵 Nepalese Politician
             </span>
 
             <h1 className="text-4xl md:text-5xl font-extrabold leading-tight">

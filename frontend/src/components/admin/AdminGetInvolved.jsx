@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import API from "@/api/api";
 
-export default function AdminDashboard() {
+export default function AdminGetInvolved() {
   const [data, setData] = useState(null);
   const token = localStorage.getItem("token");
 
@@ -28,7 +28,7 @@ export default function AdminDashboard() {
     alert("Content updated successfully");
   };
 
-  if (!data) return <p className="p-6">Loading...</p>;
+  if (!data) return <p className="p-6 text-center text-blue-700">Loading...</p>;
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -36,7 +36,7 @@ export default function AdminDashboard() {
       <input
         value={data.heading}
         onChange={(e) => handleChange("heading", e.target.value)}
-        className="w-full p-3 border rounded-xl mb-4"
+        className="w-full p-3 border rounded-xl mb-4 font-bold text-blue-700"
         placeholder="Heading"
       />
 
@@ -55,7 +55,7 @@ export default function AdminDashboard() {
             <input
               value={card.title}
               onChange={(e) => handleCardChange(i, "title", e.target.value)}
-              className="w-full mb-2 p-2 border rounded"
+              className="w-full mb-2 p-2 border rounded font-bold text-blue-700"
             />
             <textarea
               value={card.description}
@@ -70,19 +70,23 @@ export default function AdminDashboard() {
       </div>
 
       {/* CTA */}
-      <div className="flex gap-4 mt-6">
-        <input
-          value={data.ctaPrimary}
-          onChange={(e) => handleChange("ctaPrimary", e.target.value)}
-          className="p-3 border rounded-xl w-full"
-          placeholder="Primary CTA"
-        />
-        <input
-          value={data.ctaSecondary}
-          onChange={(e) => handleChange("ctaSecondary", e.target.value)}
-          className="p-3 border rounded-xl w-full"
-          placeholder="Secondary CTA"
-        />
+      <div className=" mt-6 ">
+        <h1 className="mb-2 font-bold text-red-700">Buttons</h1>
+
+        <div className="flex gap-4">
+          <input
+            value={data.ctaPrimary}
+            onChange={(e) => handleChange("ctaPrimary", e.target.value)}
+            className="p-3 border rounded-xl w-full"
+            placeholder="Primary CTA"
+          />
+          <input
+            value={data.ctaSecondary}
+            onChange={(e) => handleChange("ctaSecondary", e.target.value)}
+            className="p-3 border rounded-xl w-full"
+            placeholder="Secondary CTA"
+          />
+        </div>
       </div>
 
       <button

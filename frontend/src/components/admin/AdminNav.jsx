@@ -18,6 +18,11 @@ const AdminSidebar = () => {
     { label: "News", icon: <FaNewspaper />, path: "/admin-news" },
     { label: "Contact", icon: <BiSolidContact />, path: "/admin-contact" },
     { label: "Book", icon: <BookAIcon />, path: "/admin-book" },
+    {
+      label: "Get Involved",
+      icon: <FaCircleInfo />,
+      path: "/admin-get-involved",
+    },
   ];
 
   return (

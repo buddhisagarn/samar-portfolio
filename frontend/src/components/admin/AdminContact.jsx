@@ -7,6 +7,9 @@ import { Mail, Phone, MapPin, Trash2, Save } from "lucide-react";
 import API from "@/api/api";
 
 export default function AdminContact() {
+  const [data, setData] = useState(null);
+  API.get("/messages/messageinfo").then((res) => setData(res.data[0]));
+
   const [contactInfo, setContactInfo] = useState({
     email: "",
     contact: "",
@@ -42,6 +45,10 @@ export default function AdminContact() {
     };
     handleMessage();
   }, []);
+
+  if (!data) {
+    return <p className="p-6 text-center text-blue-700">Loading...</p>;
+  }
 
   //Saving the data in db
   const saveContactInfo = async () => {

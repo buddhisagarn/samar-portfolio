@@ -71,14 +71,18 @@ export default function AdminHome() {
       const formData = new FormData();
 
       Object.entries(content).forEach(([key, value]) => {
-        formData.append(key, value);
+        if (Array.isArray(value) || typeof value === "object") {
+          formData.append(key, JSON.stringify(value));
+        } else {
+          formData.append(key, value);
+        }
       });
 
-      if (image) formData.append("image", image);
+      if (image) {
+        formData.append("image", image);
+      }
 
-      await API.put("/content", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      await API.put("/content", formData); //  no manual headers
 
       alert("Content updated successfully");
     } catch (err) {

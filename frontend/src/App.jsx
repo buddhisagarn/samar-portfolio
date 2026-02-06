@@ -21,7 +21,7 @@ import AdminLayout from "./components/admin/AdminLayout.jsx";
 import TrendingTechnology from "./components/lightCard/TrendingTech.jsx";
 import ReadArticle from "./components/lightCard/ReadArticle.jsx";
 import AdminEmailDashboard from "./components/admin/AdminEmailDashboard.jsx";
-import AdminDashboard from "./components/admin/AdminLearnMore.jsx";
+import AdminGetInvolved from "./components/admin/AdminGetInvolved.jsx";
 
 const App = () => {
   return (
@@ -113,11 +113,11 @@ const App = () => {
           }
         />
         <Route
-          path="/admin-learn-more"
+          path="/admin-get-involved"
           element={
             <ProtectedRoute>
               <AdminLayout>
-                <AdminDashboard />
+                <AdminGetInvolved />
               </AdminLayout>
             </ProtectedRoute>
           }

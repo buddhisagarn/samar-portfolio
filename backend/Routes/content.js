@@ -42,15 +42,19 @@ router.post("/", protect, async (req, res) => {
 /* ---------------- UPDATE + IMAGE UPLOAD ---------------- */
 router.put("/", protect, upload.single("image"), async (req, res) => {
   try {
-    const data = req.body;
+    const data = { ...req.body };
 
-    /* ---------- upload image if exists ---------- */
+    // Parse JSON fields
+    ["roles", "terms", "years"].forEach((field) => {
+      if (data[field]) {
+        data[field] = JSON.parse(data[field]);
+      }
+    });
+
     if (req.file) {
       const uploadResult = await cloudinary.uploader.upload(
         `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`,
-        {
-          folder: "content", // optional but clean
-        },
+        { folder: "content" },
       );
 
       data.image = uploadResult.secure_url;
@@ -63,6 +67,7 @@ router.put("/", protect, upload.single("image"), async (req, res) => {
 
     res.json(updated);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: err.message });
   }
 });
