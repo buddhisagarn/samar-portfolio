@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Mail, Phone, MapPin, Trash2, Save } from "lucide-react";
 import API from "@/api/api";
 
@@ -23,7 +22,8 @@ export default function AdminContact() {
   };
 
   const deleteMessage = (id) => {
-    setMessages(messages.filter((m) => m.id !== id));
+    API.delete(`/messages/${id}`).catch((err) => console.log(err));
+    setMessages(messages.filter((m) => m._id !== id));
   };
   // useEffect
   useEffect(() => {
@@ -113,7 +113,7 @@ export default function AdminContact() {
         </Card>
 
         {/* Messages */}
-        <Card className="rounded-2xl border-blue-200 shadow-lg">
+        <Card className="rounded-2xl border-blue-200 shadow-lg ">
           <CardContent className="p-6">
             <h2 className="text-xl font-semibold text-blue-900 mb-4">
               Messages
@@ -121,44 +121,40 @@ export default function AdminContact() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {messages.map((msg) => (
-                <Card
+                <CardContent
                   key={msg._id}
-                  className="rounded-2xl border-blue-100 bg-white"
+                  className="relative m-3 rounded-xl bg-linear-to-br 
+                          bg-blue-500 p-5 shadow-md hover:shadow-lg transition-shadow duration-300"
                 >
-                  <CardContent
-                    className="relative m-3 rounded-xl bg-linear-to-br 
-                          from-blue-100 to-blue-200 p-5 shadow-md hover:shadow-lg transition-shadow duration-300"
-                  >
-                    {/* Header */}
-                    <div className="flex items-center justify-between mb-3">
-                      <div>
-                        <h3 className="text-sm font-semibold text-blue-900">
-                          {msg.name}
-                        </h3>
-                        <p className="text-xs text-blue-700">{msg.email}</p>
-                      </div>
-
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        onClick={() => deleteMessage(msg.id)}
-                        className="text-red-500 hover:bg-red-100"
-                      >
-                        <Trash2 size={16} />
-                      </Button>
+                  {/* Header */}
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <h3 className="text-sm font-semibold text-white">
+                        {msg.name}
+                      </h3>
+                      <p className="text-xs text-white">{msg.email}</p>
                     </div>
 
-                    {/* Message box */}
-                    <div className="bg-white rounded-lg p-4 border border-blue-100">
-                      <p className="text-xs uppercase tracking-wide text-blue-600 font-semibold mb-1">
-                        Message
-                      </p>
-                      <p className="text-sm text-gray-700 leading-relaxed">
-                        {msg.message}
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => deleteMessage(msg._id)}
+                      className="text-white hover:bg-red-100"
+                    >
+                      <Trash2 size={16} />
+                    </Button>
+                  </div>
+
+                  {/* Message box */}
+                  <div className="bg-white rounded-lg p-4 border border-blue-100">
+                    <p className="text-xs uppercase tracking-wide text-blue-600 font-semibold mb-1">
+                      Message
+                    </p>
+                    <p className="text-sm text-gray-700 leading-relaxed">
+                      {msg.message}
+                    </p>
+                  </div>
+                </CardContent>
               ))}
             </div>
           </CardContent>

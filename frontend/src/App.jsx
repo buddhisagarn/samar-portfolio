@@ -22,6 +22,9 @@ import TrendingTechnology from "./components/lightCard/TrendingTech.jsx";
 import ReadArticle from "./components/lightCard/ReadArticle.jsx";
 import AdminEmailDashboard from "./components/admin/AdminEmailDashboard.jsx";
 import AdminGetInvolved from "./components/admin/AdminGetInvolved.jsx";
+import AdminFooter from "./components/admin/AdminFooter.jsx";
+import PoliticianYoutube from "./pages/YoutubeChannelPage.jsx";
+import AdminSendEmail from "./components/admin/AdminSendEmail.jsx";
 
 const App = () => {
   return (
@@ -38,6 +41,7 @@ const App = () => {
         <Route path="/apicall" element={<APIcall />} />
         <Route path="/trending-tech" element={<TrendingTechnology />} />
         <Route path="/articles/:id" element={<ReadArticle />} />
+        <Route path="/youtube" element={<PoliticianYoutube />} />
 
         <Route
           path="/admin-home"
@@ -118,6 +122,26 @@ const App = () => {
             <ProtectedRoute>
               <AdminLayout>
                 <AdminGetInvolved />
+              </AdminLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin-footer"
+          element={
+            <ProtectedRoute>
+              <AdminLayout>
+                <AdminFooter />
+              </AdminLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin-sendEmail"
+          element={
+            <ProtectedRoute>
+              <AdminLayout>
+                <AdminSendEmail />
               </AdminLayout>
             </ProtectedRoute>
           }

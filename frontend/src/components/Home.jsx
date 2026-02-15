@@ -18,7 +18,6 @@ const Home = () => {
     };
     fetchContent();
   }, []);
-  console.log(import.meta.env.VITE_API_URI);
 
   return (
     <div
@@ -96,10 +95,10 @@ const Home = () => {
             A Legacy of <span className="text-blue-700">Public Service</span>
           </h2>
           <p className="text-gray-600 max-w-3xl mx-auto">
-            Hands-on experience building full-stack web applications using the
-            different languages, with a strong focus on practical
-            problem-solving, clean architecture, and real-world project
-            development.
+            My journey in public service has been driven by a deep sense of
+            responsibility toward the people and the nation. I believe
+            leadership is not about position, but about service, integrity, and
+            impact. 
           </p>
         </div>
       </section>

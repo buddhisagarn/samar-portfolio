@@ -25,6 +25,13 @@ export default function BookStorePage() {
     fetchBooks();
   }, []);
 
+  //
+  const getPreview = (text = "", limit = 200) => {
+    const words = text.split(" ");
+    if (words.length <= limit) return text;
+    return words.slice(0, limit).join(" ") + "...";
+  };
+
   return (
     <div>
       <NavBar />
@@ -37,11 +44,8 @@ export default function BookStorePage() {
             animate={{ opacity: 1, y: 0 }}
             className="text-center mb-14"
           >
-            <h1 className="text-4xl md:text-5xl font-bold text-blue-900">
-              My Books
-            </h1>
             <p className="text-blue-700 mt-4 max-w-2xl mx-auto">
-              Words I’ve written with intention — for builders & thinkers.
+              Words I’ve Read with intention — from builders & thinkers.
             </p>
           </motion.div>
 
@@ -67,7 +71,9 @@ export default function BookStorePage() {
                     <h2 className="text-xl font-semibold">{book.title}</h2>
                     <p className="text-sm text-blue-600">{book.subtitle}</p>
 
-                    <p className="text-sm mt-2 grow">{book.description}</p>
+                    <p className="text-sm mt-2 grow">
+                      {getPreview(book.description)}
+                    </p>
 
                     <div className="flex flex-wrap gap-2 mt-4">
                       {book.tags.map((tag) => (
@@ -75,22 +81,6 @@ export default function BookStorePage() {
                           {tag}
                         </Badge>
                       ))}
-                    </div>
-
-                    <div className="flex justify-between mt-6">
-                      <span className="font-bold">{book.price}</span>
-
-                      {book.status === "Available" ? (
-                        <Button>
-                          <ShoppingCart size={16} className="mr-1" />
-                          Buy Now
-                        </Button>
-                      ) : (
-                        <Button variant="outline">
-                          <BookOpen size={16} className="mr-1" />
-                          Notify Me
-                        </Button>
-                      )}
                     </div>
                   </CardContent>
                 </Card>

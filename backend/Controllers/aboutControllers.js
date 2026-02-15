@@ -69,3 +69,19 @@ export const getaboutSection = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const deleteAboutSection = async (req, res) => {
+  try {
+    const { aboutid, skillid } = req.params;
+
+    const updated = await About.findByIdAndUpdate(
+      aboutid,
+      { $pull: { skill: { _id: skillid } } },
+      { new: true },
+    );
+
+    res.json({ message: "Skill deleted successfully", data: updated });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

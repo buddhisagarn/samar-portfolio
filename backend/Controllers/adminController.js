@@ -19,5 +19,5 @@ export const sendBulkEmail = async (req, res) => {
     await sendEmail(sub.email, subject, `<h2>${subject}</h2><p>${message}</p>`);
   }
 
-  res.json({ message: "Emails sent successfully 🚀" });
+  res.json({ message: "Emails sent successfully " });
 };

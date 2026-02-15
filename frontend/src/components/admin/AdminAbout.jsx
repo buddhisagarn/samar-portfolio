@@ -17,6 +17,7 @@ export default function AdminAbout() {
   const [skills, setSkills] = useState([]);
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
+  const [aboutId, setAboutId] = useState(null); // Store the about section ID for skill deletion
 
   /* -------------------- LOAD DATA -------------------- */
   useEffect(() => {
@@ -31,6 +32,7 @@ export default function AdminAbout() {
             pictitle: res.data.pictitle || "",
           });
           setSkills(res.data.skill || []);
+          setAboutId(res.data._id); // Store the about section ID
         }
       } catch (err) {
         console.log(err);
@@ -55,8 +57,20 @@ export default function AdminAbout() {
     setSkills(updated);
   };
 
-  const deleteSkill = (index) => {
-    setSkills(skills.filter((_, i) => i !== index));
+  // const deleteSkill = (index) => {
+  //   console.log("Deleting skill with id:", index);
+  //   API.delete(`/about/${index}`).catch((err) => console.error(err));
+  //   setSkills(skills.filter((_, i) => i !== index));
+  // };
+  const deleteSkill = async (id) => {
+    if (!confirm("Sure to delete this skill")) return;
+    try {
+      console.log("Deleted skill with id:", id);
+      await API.delete(`/about/${aboutId}/skill/${id}`);
+      setSkills(skills.filter((s) => s._id !== id));
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   /* -------------------- SAVE -------------------- */
@@ -188,7 +202,7 @@ export default function AdminAbout() {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => deleteSkill(index)}
+                        onClick={() => deleteSkill(skill._id)}
                         className="border-red-300 text-red-600"
                       >
                         <Trash2 size={14} />

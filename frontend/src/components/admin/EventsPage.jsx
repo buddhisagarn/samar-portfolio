@@ -6,14 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Trash2, Plus, Edit, Save } from "lucide-react";
-import NavBar from "./AdminNav";
+import { AutoGrowTextarea } from "./Admin.jsx";
 import API from "@/api/api";
-
-// const API = "http://localhost:5000/api/events";
+import { Textarea } from "../ui/textarea.jsx";
 
 export default function AdminEvents() {
   const [events, setEvents] = useState([]);
   const [editingId, setEditingId] = useState(null);
+  const [errors, setErrors] = useState({});
 
   const [form, setForm] = useState({
     title: "",
@@ -23,7 +23,19 @@ export default function AdminEvents() {
     tags: "",
   });
 
-  /* 📥 Load events */
+  //
+  const resetForm = () => {
+    setEditingId(null);
+    setForm({
+      title: "",
+      date: "",
+      location: "",
+      description: "",
+      tags: "",
+    });
+  };
+
+  /*  Load events */
   useEffect(() => {
     const setEvent = async () => {
       try {
@@ -40,31 +52,52 @@ export default function AdminEvents() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  /* ➕ Add / ✏️ Update */
-  const saveEvent = async () => {
-    if (!form.title) return;
+  /*  Add /  Update */
+  const saveEvent = async (e) => {
+    e.preventDefault();
+    let newErrors = {};
 
-    const method = editingId ? "PUT" : "POST";
-    const url = editingId ? `${API}/${editingId}` : API;
+    if (!form.title.trim()) newErrors.title = "Title is required";
+    if (!form.date.trim()) newErrors.date = "Date is required";
+    if (!form.tags.trim()) newErrors.tags = "Tags are required";
+    if (!form.location.trim()) newErrors.location = "Location is required";
+    if (!form.description.trim())
+      newErrors.description = "Description is required";
 
-    const res = await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
 
-    const data = await res.json();
+    try {
+      let res;
 
-    setEvents((prev) =>
-      editingId
-        ? prev.map((e) => (e._id === editingId ? data : e))
-        : [data, ...prev],
-    );
+      if (editingId) {
+        // Update existing item
+        res = await API.put(`/events/${editingId}`, form);
+      } else {
+        // Create new item
+        res = await API.post("/events", form);
+      }
 
-    resetForm();
+      const data = res.data; // Axios already gives parsed JSON here
+
+      alert(data.message || "Success!");
+
+      setEvents((prev) =>
+        editingId
+          ? prev.map((e) => (e._id === editingId ? data : e))
+          : [data, ...prev],
+      );
+
+      resetForm();
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong");
+    }
   };
 
-  /* ✏️ Edit */
+  /*  Edit */
   const editEvent = (event) => {
     setEditingId(event._id);
     setForm({
@@ -78,19 +111,9 @@ export default function AdminEvents() {
 
   /* 🗑 Delete */
   const deleteEvent = async (id) => {
-    await fetch(`${API}/events/${id}`, { method: "DELETE" });
-    setEvents(events.filter((e) => e._id !== id));
-  };
+    await API.delete(`/events/${id}`);
 
-  const resetForm = () => {
-    setEditingId(null);
-    setForm({
-      title: "",
-      date: "",
-      location: "",
-      description: "",
-      tags: "",
-    });
+    setEvents(events.filter((e) => e._id !== id));
   };
 
   return (
@@ -98,42 +121,56 @@ export default function AdminEvents() {
       <div className="max-w-6xl mx-auto">
         {/* Add / Edit Form */}
         <Card className="rounded-2xl border-blue-200 mb-10">
-          <CardContent className="p-6 grid md:grid-cols-2 gap-4">
+          <CardContent className="p-6 flex flex-col gap-4">
             <Input
               name="title"
               placeholder="Event title"
               value={form.title}
               onChange={handleChange}
             />
+            {errors.title && (
+              <p className="text-sm text-red-600">{errors.title}</p>
+            )}
             <Input
               name="date"
               placeholder="Date"
               value={form.date}
               onChange={handleChange}
             />
+            {errors.date && (
+              <p className="text-sm text-red-600">{errors.date}</p>
+            )}
             <Input
               name="location"
               placeholder="Location"
               value={form.location}
               onChange={handleChange}
             />
+            {errors.location && (
+              <p className="text-sm text-red-600">{errors.location}</p>
+            )}
             <Input
               name="tags"
               placeholder="Tags (comma separated)"
               value={form.tags}
               onChange={handleChange}
             />
-            <Input
+            {errors.tags && (
+              <p className="text-sm text-red-600">{errors.tags}</p>
+            )}
+            <Textarea
               name="description"
               placeholder="Description"
               value={form.description}
               onChange={handleChange}
-              className="md:col-span-2"
+              className="md:col-span-2 h-30"
             />
-
+            {errors.description && (
+              <p className="text-sm text-red-600">{errors.description}</p>
+            )}
             <Button
               onClick={saveEvent}
-              className="bg-blue-700 hover:bg-blue-800 rounded-xl md:col-span-2"
+              className="bg-blue-700 hover:bg-blue-800 rounded-xl md:col-span-2 w-fit"
             >
               {editingId ? (
                 <Save size={16} className="mr-2" />

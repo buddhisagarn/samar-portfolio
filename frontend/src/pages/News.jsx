@@ -9,24 +9,20 @@ import { Calendar, Eye, Search, TrendingUp } from "lucide-react";
 import { motion } from "framer-motion";
 import NavBar from "@/components/NavBar";
 import AboutSection from "@/components/About";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import SubscribeModal from "@/components/buttons/SubscribeButton";
 import API from "@/api/api";
 
-const categories = ["All", "Technology", "Career", "Business"];
+const categories = ["All", "Politics", "Technology", "Business"];
 
 export default function NewsPage() {
   const [news, setNews] = useState([]);
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [showModel, setShowModel] = useState(false);
-
-  //function for showing subscribe card
-  // const showSubscribe = () => {
-
-  // }
+  const [selectedArticle, setSelectedArticle] = useState(null);
 
   /*  Fetch news from backend */
   useEffect(() => {
@@ -35,7 +31,6 @@ export default function NewsPage() {
         const res = await API.get("/news");
         // const data = await res.json();
         setNews(res.data);
-        console.log(res.data);
       } catch (err) {
         console.error(err);
       } finally {
@@ -49,9 +44,7 @@ export default function NewsPage() {
   /*  Increase views */
   const handleRead = async (id) => {
     try {
-      await fetch(`${API}/news/${id}/view`, {
-        method: "PATCH",
-      });
+      await API.patch(`/news/${id}/view`);
 
       // update UI instantly (no refetch)
       setNews((prev) =>
@@ -71,6 +64,13 @@ export default function NewsPage() {
 
     return matchCategory && matchSearch;
   });
+
+  //Reading Article
+  const getPreview = (text = "", limit = 200) => {
+    const words = text.split(" ");
+    if (words.length <= limit) return text;
+    return words.slice(0, limit).join(" ") + "...";
+  };
 
   return (
     <div>
@@ -127,7 +127,9 @@ export default function NewsPage() {
                       {n.title}
                     </h2>
 
-                    <p className="text-blue-800 text-sm">{n.excerpt}</p>
+                    <p className="text-blue-800 text-sm">
+                      {getPreview(n.excerpt, 50)}
+                    </p>
 
                     <div className="flex justify-between text-sm text-blue-700 pt-4 border-t">
                       <span className="flex items-center gap-2">
@@ -143,7 +145,7 @@ export default function NewsPage() {
                       className="w-full rounded-xl border-blue-300 text-blue-700"
                       onClick={() => {
                         handleRead(n._id); // increase views
-                        navigate(`/articles/${n._id}`); // go to read page
+                        setSelectedArticle(n);
                       }}
                     >
                       Read Full Article
@@ -178,6 +180,52 @@ export default function NewsPage() {
 
       <AboutSection />
       {showModel && <SubscribeModal onClose={() => setShowModel(false)} />}
+      {selectedArticle && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Background Blur */}
+          <div
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            onClick={() => setSelectedArticle(null)}
+          />
+
+          {/* Modal Box */}
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.8, opacity: 0 }}
+            className="relative bg-white w-[95%] max-w-3xl max-h-[85vh] overflow-y-auto rounded-2xl shadow-2xl p-8 z-50"
+          >
+            {/* Close Button */}
+            <button
+              onClick={() => setSelectedArticle(null)}
+              className="absolute top-4 right-4 text-gray-500 hover:text-red-500 text-xl"
+            >
+              ✕
+            </button>
+
+            <Badge className="bg-blue-100 text-blue-700 mb-3">
+              {selectedArticle.category}
+            </Badge>
+
+            <h2 className="text-2xl font-bold text-blue-900 mb-4">
+              {selectedArticle.title}
+            </h2>
+
+            <div className="text-sm text-blue-700 flex gap-6 mb-6">
+              <span className="flex items-center gap-2">
+                <Calendar size={14} /> {selectedArticle.date}
+              </span>
+              <span className="flex items-center gap-2">
+                <Eye size={14} /> {selectedArticle.views}
+              </span>
+            </div>
+
+            <p className="text-gray-700 whitespace-pre-line leading-relaxed">
+              {selectedArticle.excerpt}
+            </p>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }

@@ -4,11 +4,13 @@ import { motion } from "framer-motion";
 import { useAuth } from "./UseAuth.jsx";
 import { useNavigate } from "react-router-dom";
 import API from "@/api/api.js";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function AdminLogin() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const { login } = useAuth();
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async () => {
@@ -41,12 +43,19 @@ export default function AdminLogin() {
           onChange={(e) => setForm({ ...form, email: e.target.value })}
         />
 
-        <input
-          type="password"
-          placeholder="Password"
-          className="w-full mb-4 px-4 py-2 border rounded-lg"
-          onChange={(e) => setForm({ ...form, password: e.target.value })}
-        />
+        <div className="flex border rounded-lg w-full mb-4 px-4 py-2 justify-between items-center">
+          <input
+            type={showPassword ? "text" : "password"}
+            placeholder="Password"
+            className="flex-1 outline-none"
+            onChange={(e) => setForm({ ...form, password: e.target.value })}
+          />
+          {showPassword ? (
+            <EyeOff size={18} onClick={() => setShowPassword(false)} />
+          ) : (
+            <Eye size={18} onClick={() => setShowPassword(true)} />
+          )}
+        </div>
 
         {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
 

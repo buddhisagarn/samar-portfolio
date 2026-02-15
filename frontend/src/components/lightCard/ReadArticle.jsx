@@ -1,8 +1,8 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import axios from "axios";
-
-const ReadArticle = () => {
+import API from "@/api/api";
+import { FaArrowLeft } from "react-icons/fa";
+const ReadArticle = ({ onClose }) => {
   const { id } = useParams();
   const [article, setArticle] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -10,7 +10,7 @@ const ReadArticle = () => {
   useEffect(() => {
     const fetchArticle = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/articles/${id}`);
+        const res = await API.get(`/articles/${id}`);
         setArticle(res.data);
       } catch (err) {
         console.error(err);
@@ -27,7 +27,24 @@ const ReadArticle = () => {
   }
 
   if (!article) {
-    return <p className="text-center mt-10">Article not found</p>;
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-start gap-5">
+        <p className="text-center mt-10">Article not found</p>
+        <button
+          className="bg-blue-700 p-2 text-white rounded-sm flex items-center gap-2 cursor-pointer"
+          onClick={() => (window.location.href = "/news")}
+        >
+          <FaArrowLeft />
+          Back Home
+        </button>
+        <button
+          onClick={onClose}
+          className="absolute right-4 top-4 text-gray-400 hover:text-gray-600"
+        >
+          ✕
+        </button>
+      </div>
+    );
   }
 
   return (

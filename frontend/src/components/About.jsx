@@ -1,81 +1,92 @@
+import { useEffect, useState } from "react";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
-import { FaGithub, FaLinkedin, FaTwitter, FaEnvelope } from "react-icons/fa";
+import { FaFacebook, FaTwitter, FaEnvelope } from "react-icons/fa";
+import API from "@/api/api";
+import { FaGithub, FaLinkedin } from "react-icons/fa";
+
 export default function AboutSection() {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await API.get("/footer");
+        setData(res.data);
+      } catch (err) {
+        console.error("Failed to load about data", err);
+      }
+    };
+    fetchData();
+  }, []);
+
+  if (!data) return null;
+
   return (
-    <section className="relative bg-linear-to-br from-blue-900 to-blue-700 text-white py-20 px-6">
+    <section className="bg-linear-to-br from-blue-900 to-blue-800 text-white py-20 px-6">
       <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-        {/* Text Content */}
+        {/* TEXT */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            About <span className="text-blue-200">Me</span>
-          </h2>
-          <p className="text-blue-100 leading-relaxed mb-4">
-            I’m a passionate developer who loves building clean, scalable, and
-            user‑friendly web experiences. I enjoy turning complex problems into
-            simple, beautiful solutions.
-          </p>
-          <p className="text-blue-100 leading-relaxed mb-6">
-            Currently focused on modern web technologies, performance‑driven
-            design, and crafting products that actually make people say
-            <span className="italic"> “this feels good to use.”</span>
-          </p>
+          <h2 className="text-4xl font-bold mb-4">{data.name}</h2>
+          <p className="text-blue-200 mb-2 text-xs">{data.role}</p>
 
-          {/* Social Icons */}
+          <p className="text-blue-100 mb-4">{data.bio1}</p>
+          <p className="text-blue-100 mb-6">{data.bio2}</p>
+
+          <blockquote className="italic text-blue-200 border-l-4 pl-4 mb-6">
+            “{data.vision}”
+          </blockquote>
+
           <div className="flex gap-4">
+            {" "}
             <a
               href="#"
               className="p-3 rounded-full bg-white/10 hover:bg-white/20 transition"
             >
-              <FaGithub size={20} />
-            </a>
+              {" "}
+              <FaGithub size={20} />{" "}
+            </a>{" "}
             <a
               href="#"
               className="p-3 rounded-full bg-white/10 hover:bg-white/20 transition"
             >
-              <FaLinkedin size={20} />
-            </a>
+              {" "}
+              <FaLinkedin size={20} />{" "}
+            </a>{" "}
             <a
               href="#"
               className="p-3 rounded-full bg-white/10 hover:bg-white/20 transition"
             >
-              <FaTwitter size={20} />
-            </a>
+              {" "}
+              <FaTwitter size={20} />{" "}
+            </a>{" "}
             <a
               href="mailto:your@email.com"
               className="p-3 rounded-full bg-white/10 hover:bg-white/20 transition"
             >
-              <FaEnvelope size={20} />
-            </a>
+              {" "}
+              <FaEnvelope size={20} />{" "}
+            </a>{" "}
           </div>
         </motion.div>
 
-        {/* Visual Card */}
+        {/* SNAPSHOT */}
         <motion.div
+          className="bg-white/10 backdrop-blur-lg rounded-2xl p-8"
           initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-          className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 shadow-xl"
         >
           <h3 className="text-xl font-semibold mb-3">Quick Snapshot</h3>
           <ul className="space-y-3 text-blue-100">
-            <li>Building modern React & MERN apps</li>
-            <li>Clean UI, smooth UX, blue‑themed vibes</li>
-            <li>Performance + scalability focused</li>
-            <li>Always learning, always improving</li>
+            {data.highlights.map((item, i) => (
+              <li key={i}>• {item}</li>
+            ))}
           </ul>
         </motion.div>
-      </div>
-
-      {/* Footer Note */}
-      <div className="mt-16 text-center text-blue-200 text-sm">
-        © {new Date().getFullYear()} • Built with passion & a lot of coffee 
       </div>
     </section>
   );

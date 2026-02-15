@@ -5,14 +5,15 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Trash2, Save, TrendingUp } from "lucide-react";
+import AdminSendEmail from "./AdminSendEmail.jsx";
 import API from "@/api/api";
-
-// const API = "http://localhost:5000/api/news";
 
 export default function AdminNews() {
   const [news, setNews] = useState([]);
   const [editingId, setEditingId] = useState(null);
-
+  const [errors, setErrors] = useState({});
+  const [subscribers, setSubscribers] = useState([]);
+  const [sendEmailOpen, setSendEmailOpen] = useState(false);
   const [form, setForm] = useState({
     title: "",
     date: "",
@@ -27,6 +28,8 @@ export default function AdminNews() {
       try {
         const res = await API.get("/news");
         setNews(res.data);
+        const subscriber = await API.get("/admin/subscribers");
+        setSubscribers(subscriber.data);
       } catch (err) {
         console.log(err);
       }
@@ -41,27 +44,37 @@ export default function AdminNews() {
   };
 
   /*  Add or  Update */
-  const saveNews = async () => {
-    if (!form.title || !form.category) return;
+  const saveNews = async (e) => {
+    e.preventDefault();
+    let newErrors = {};
 
-    const method = editingId ? "PUT" : "POST";
-    const url = editingId ? `${API}/${editingId}` : API;
+    if (!form.title.trim()) newErrors.title = "Title is required";
+    if (!form.category) newErrors.category = "Category is required";
+    if (!form.excerpt.trim()) newErrors.excerpt = "Descriptions is required";
+    if (!form.date.trim()) newErrors.date = "Date is required";
 
-    const res = await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
 
-    const data = await res.json();
+    try {
+      let res;
 
-    setNews((prev) =>
-      editingId
-        ? prev.map((n) => (n._id === editingId ? data : n))
-        : [data, ...prev],
-    );
+      if (editingId) {
+        res = await API.put(`/news/${editingId}`, form);
+        setNews((prev) =>
+          prev.map((n) => (n._id === editingId ? res.data : n)),
+        );
+      } else {
+        res = await API.post("/news", form);
+        setNews((prev) => [res.data, ...prev]);
+      }
 
-    resetForm();
+      resetForm();
+    } catch (error) {
+      console.error("Error saving news:", error);
+    }
   };
 
   /*  Edit */
@@ -78,7 +91,7 @@ export default function AdminNews() {
 
   /*  Delete */
   const deleteNews = async (id) => {
-    await fetch(`${API}/${id}`, { method: "DELETE" });
+    await API.delete(`/news/${id}`);
     setNews(news.filter((n) => n._id !== id));
   };
 
@@ -103,25 +116,39 @@ export default function AdminNews() {
               {editingId ? "Edit News" : "Add News"}
             </h2>
 
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="grid  gap-4">
               <Input
                 name="title"
                 value={form.title}
                 onChange={handleChange}
                 placeholder="Title"
               />
+              {errors.title && (
+                <p className="text-red-500 text-sm mt-1">{errors.title}</p>
+              )}
               <Input
                 name="date"
                 value={form.date}
                 onChange={handleChange}
                 placeholder="Date"
               />
-              <Input
+              {errors.date && (
+                <p className="text-red-500 text-sm mt-1">{errors.date}</p>
+              )}
+              <select
                 name="category"
                 value={form.category}
                 onChange={handleChange}
-                placeholder="Category"
-              />
+                className="w-full rounded-xl border border-blue-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-600"
+              >
+                <option value="">Select Category</option>
+                <option value="Politics">Politics</option>
+                <option value="Technology">Technology</option>
+                <option value="Business">Business</option>
+              </select>
+              {errors.category && (
+                <p className="text-red-500 text-sm mt-1">{errors.category}</p>
+              )}
             </div>
 
             <Textarea
@@ -130,6 +157,9 @@ export default function AdminNews() {
               onChange={handleChange}
               placeholder="Excerpt"
             />
+            {errors.excerpt && (
+              <p className="text-red-500 text-sm mt-1">{errors.excerpt}</p>
+            )}
 
             <label className="flex items-center gap-2 text-sm">
               <input
@@ -150,7 +180,7 @@ export default function AdminNews() {
 
         {/* List */}
         <Card className="rounded-2xl shadow-lg">
-          <CardContent className="p-6 grid md:grid-cols-2 gap-6">
+          <CardContent className="p-6 grid lg:grid-cols-2 gap-6">
             {news.map((n) => (
               <Card key={n._id} className="bg-white">
                 <CardContent className="p-5 space-y-3">
@@ -188,7 +218,37 @@ export default function AdminNews() {
             ))}
           </CardContent>
         </Card>
+        {subscribers.length > 0 && (
+          <Card className="rounded-2xl shadow-lg">
+            <CardContent className="p-6 space-y-4">
+              <h2 className="text-xl font-semibold text-blue-900">
+                Subscribers
+              </h2>
+              <ul className="list-disc list-inside">
+                {subscribers.map((s) => (
+                  <li
+                    key={s._id}
+                    className="text-sm text-gray-700 flex justify-between "
+                  >
+                    {s.email}
+                    <Button
+                      className="mt-1"
+                      onClick={async () => {
+                        setSendEmailOpen(true);
+                      }}
+                    >
+                      Send Email
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        )}
       </div>
+      {sendEmailOpen && (
+        <AdminSendEmail onClose={() => setSendEmailOpen(false)} />
+      )}
     </div>
   );
 }

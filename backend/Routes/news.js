@@ -17,6 +17,7 @@ router.put("/:id", updateNews);
 router.delete("/:id", deleteNews);
 router.get("/articles/:id", getSingleArticle);
 
+
 // Public
 router.patch("/:id/view", increaseViews);
 

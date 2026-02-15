@@ -56,13 +56,14 @@ export default function ContactPage() {
                     Why reach out?
                   </h2>
                   <p className="text-blue-800">
-                    I believe meaningful things start with conversations.
-                    Whether you want to collaborate, ask something, share
-                    feedback, or just say hello — your message matters.
+                    I believe strong democracy is built through dialogue and
+                    connection. Whether you wish to share concerns, suggestions,
+                    or ideas for national development — your voice is important.
                   </p>
                   <p className="text-blue-800">
-                    I read every message personally and reply with intention. No
-                    bots. No rush. Just real talk.
+                    I value direct communication with citizens and stakeholders.
+                    Every message is given sincere attention, with respect and
+                    responsibility.
                   </p>
                 </CardContent>
               </Card>

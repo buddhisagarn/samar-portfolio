@@ -23,7 +23,13 @@ const AdminSidebar = () => {
       icon: <FaCircleInfo />,
       path: "/admin-get-involved",
     },
+    { label: "Footer", icon: <FaCircleInfo />, path: "/admin-footer" },
   ];
+
+  const logout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
 
   return (
     <>
@@ -64,6 +70,12 @@ const AdminSidebar = () => {
             </li>
           ))}
         </ul>
+        <button
+          onClick={logout}
+          className="px-4 ms-5 mt-5 py-2  bg-red-500 text-white rounded-lg"
+        >
+          Logout
+        </button>
       </aside>
 
       {/* Overlay for mobile */}

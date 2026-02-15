@@ -33,13 +33,13 @@ const GetInvolvedSection = ({ onClose }) => {
   if (!data) return null;
 
   return (
-    <section className="fixed inset-0 z-50 flex items-center justify-center bg-blue-900/40 backdrop-blur-md animate-fadeIn">
+    <section className="fixed inset-0 z-50 flex items-center justify-center bg-blue-900/40 backdrop-blur-md animate-fadeIn  ">
       {/* Background Blur */}
       <div className="absolute -top-30 -left-30 w-96 h-96 bg-blue-500/30 rounded-full blur-3xl"></div>
       <div className="absolute -bottom-30 -right-30 w-96 h-96 bg-blue-700/30 rounded-full blur-3xl"></div>
 
       {/* Main Card */}
-      <div className="relative w-full max-w-5xl backdrop-blur-2xl rounded-3xl shadow-2xl border border-blue-200 p-6 bg-white">
+      <div className="relative w-full  backdrop-blur-2xl rounded-3xl shadow-2xl border border-blue-200 p-6 bg-white max-w-3xl max-h-[85vh] overflow-y-auto">
         {/* Header */}
         <div className="mb-4">
           <h2 className="text-2xl lg:text-3xl font-semibold text-blue-700 mb-2">
@@ -53,13 +53,8 @@ const GetInvolvedSection = ({ onClose }) => {
         {/* Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-4 mb-4">
           {data.cards?.map((card, index) => (
-            <div
-              key={index}
-              className="rounded-2xl p-6 border border-blue-300"
-            >
-              <h3 className="font-semibold text-blue-700 mb-2">
-                {card.title}
-              </h3>
+            <div key={index} className="rounded-2xl p-6 border border-blue-300">
+              <h3 className="font-semibold text-blue-700 mb-2">{card.title}</h3>
               <p className="text-gray-700 text-sm leading-relaxed">
                 {card.description}
               </p>
@@ -69,7 +64,10 @@ const GetInvolvedSection = ({ onClose }) => {
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-4">
-          <button className="px-5 py-2.5 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 transition shadow-md">
+          <button
+            className="px-5 py-2.5 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 transition shadow-md"
+            onClick={() => navigate("/events")}
+          >
             {data.ctaPrimary}
           </button>
 

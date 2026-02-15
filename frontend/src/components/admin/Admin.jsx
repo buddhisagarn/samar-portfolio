@@ -3,7 +3,7 @@ import API from "../../api/api";
 import AdminLogin from "./AdminLogin";
 
 /* ---------------- AUTO GROW TEXTAREA ---------------- */
-function AutoGrowTextarea({ label, value, onChange }) {
+export function AutoGrowTextarea({ label, value, onChange }) {
   const ref = useRef(null);
 
   useEffect(() => {
@@ -44,6 +44,7 @@ export default function AdminHome() {
   });
 
   const [image, setImage] = useState(null);
+  // const [journey, setJourney] = useState([]);
   const [preview, setPreview] = useState(null);
 
   /* ---------------- FETCH CONTENT ---------------- */
@@ -54,6 +55,7 @@ export default function AdminHome() {
       try {
         const res = await API.get("/content");
         setContent(res.data);
+        // setJourney(res.data.journey || []);
         if (res.data?.image) setPreview(res.data.image);
       } catch (err) {
         console.error(err);
@@ -65,35 +67,32 @@ export default function AdminHome() {
     fetchContent();
   }, [isLoggedIn]);
 
-  /* ---------------- SAVE ---------------- */
+  // Handle journey changes
+
   const handleSave = async () => {
     try {
+      const token = localStorage.getItem("token");
       const formData = new FormData();
 
       Object.entries(content).forEach(([key, value]) => {
-        if (Array.isArray(value) || typeof value === "object") {
-          formData.append(key, JSON.stringify(value));
-        } else {
-          formData.append(key, value);
-        }
+        formData.append(key, value);
       });
 
       if (image) {
         formData.append("image", image);
       }
 
-      await API.put("/content", formData); //  no manual headers
+      await API.put("/content", formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       alert("Content updated successfully");
     } catch (err) {
-      console.error(err);
+      console.error(err.response?.data || err);
       alert("Update failed");
     }
-  };
-
-  const logout = () => {
-    localStorage.removeItem("token");
-    setIsLoggedIn(false);
   };
 
   /* ---------------- GUARDS ---------------- */
@@ -103,17 +102,21 @@ export default function AdminHome() {
 
   /* ---------------- RENDER ---------------- */
   return (
-    <div className="min-h-screen bg-blue-50 grid md:grid-cols-2 gap-6 max-w-6xl mx-auto p-4">
+    <div className="min-h-screen bg-blue-50 grid min-[1100px]:grid-cols-2 gap-6 max-w-6xl mx-auto p-4">
       {/* ADMIN PANEL */}
       <div className="bg-white rounded-2xl shadow-lg p-6">
-        {Object.keys(content).map((key) => (
-          <AutoGrowTextarea
-            key={key}
-            label={key}
-            value={content[key]}
-            onChange={(e) => setContent({ ...content, [key]: e.target.value })}
-          />
-        ))}
+        {Object.keys(content)
+          .filter((key) => key !== "image")
+          .map((key) => (
+            <AutoGrowTextarea
+              key={key}
+              label={key}
+              value={content[key]}
+              onChange={(e) =>
+                setContent({ ...content, [key]: e.target.value })
+              }
+            />
+          ))}
 
         {/* IMAGE INPUT */}
         <div className="mb-4">
@@ -131,19 +134,30 @@ export default function AdminHome() {
           />
         </div>
 
+        {/* <div>
+          {journey.map((item, idx) => (
+            <div key={idx} className="mb-3">
+              <label className="block text-sm font-medium text-gray-600">
+                Journey {idx + 1}
+              </label>
+              <AutoGrowTextarea
+                value={item}
+                onChange={(e) => {
+                  const newJourney = [...journey];
+                  newJourney[idx] = e.target.value;
+                  setJourney(newJourney);
+                }}
+              />
+            </div>
+          ))}
+        </div> */}
+
         <div className="flex gap-3 mt-4">
           <button
             onClick={handleSave}
             className="px-4 py-2 bg-blue-700 text-white rounded-lg"
           >
             Save Changes
-          </button>
-
-          <button
-            onClick={logout}
-            className="px-4 py-2 bg-red-500 text-white rounded-lg"
-          >
-            Logout
           </button>
         </div>
       </div>
