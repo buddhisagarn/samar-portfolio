@@ -2,7 +2,6 @@ import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import User from "../Models/subscriber.js";
 
-//comment
 passport.use(
   new GoogleStrategy(
     {
