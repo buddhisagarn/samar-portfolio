@@ -38,13 +38,13 @@ const AdminSendEmail = ({ onClose }) => {
   };
 
   return (
-    <section className="fixed top-0 min-h-screen flex items-center justify-center bg-blue-50 p-4">
-      <div className=" relative w-full max-w-xl bg-white shadow-2xl rounded-2xl p-6 sm:p-8 border border-blue-200">
+    <section className="fixed top-0 min-h-screen flex items-center justify-center w-full   bg-blue-900 backdrop-blur-md animate-fadeIn">
+      <div className=" relative w-full max-w-xl bg-white shadow-2xl rounded-2xl p-6 sm:p-8 border border-blue-200 ">
         <h2 className="text-2xl sm:text-3xl font-semibold text-blue-700 mb-6">
           Send Email to Subscribers
         </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-5 ">
+        <form onSubmit={handleSubmit} className="">
           {/* Subject */}
           <div>
             <label className="block text-gray-700 font-medium mb-1">

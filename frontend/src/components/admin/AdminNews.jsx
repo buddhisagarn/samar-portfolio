@@ -7,6 +7,9 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, Trash2, Save, TrendingUp } from "lucide-react";
 import AdminSendEmail from "./AdminSendEmail.jsx";
 import API from "@/api/api";
+import { Calendar, Eye, Search } from "lucide-react";
+// eslint-disable-next-line no-unused-vars
+import { motion } from "framer-motion";
 
 export default function AdminNews() {
   const [news, setNews] = useState([]);
@@ -14,6 +17,7 @@ export default function AdminNews() {
   const [errors, setErrors] = useState({});
   const [subscribers, setSubscribers] = useState([]);
   const [sendEmailOpen, setSendEmailOpen] = useState(false);
+  const [selectedArticle, setSelectedArticle] = useState(null);
   const [form, setForm] = useState({
     title: "",
     date: "",
@@ -95,6 +99,11 @@ export default function AdminNews() {
     setNews(news.filter((n) => n._id !== id));
   };
 
+  const deleteSubscriber = async (id) => {
+    await API.delete(`/admin/subscribers/${id}`);
+    setSubscribers(subscribers.filter((s) => s._id !== id));
+  };
+
   const resetForm = () => {
     setEditingId(null);
     setForm({
@@ -104,6 +113,13 @@ export default function AdminNews() {
       excerpt: "",
       trending: false,
     });
+  };
+
+  //Reading Article
+  const getPreview = (text = "", limit = 200) => {
+    const words = text.split(" ");
+    if (words.length <= limit) return text;
+    return words.slice(0, limit).join(" ") + "...";
   };
 
   return (
@@ -191,7 +207,7 @@ export default function AdminNews() {
 
                   <h3 className="font-semibold">{n.title}</h3>
                   <p className="text-sm">{n.date}</p>
-                  <p className="text-sm">{n.excerpt}</p>
+                  <p className="text-sm">{getPreview(n.excerpt, 50)}</p>
 
                   <div className="flex justify-between pt-3 border-t">
                     <span className="text-xs">Views: {n.views}</span>
@@ -199,10 +215,18 @@ export default function AdminNews() {
                       <Button
                         size="sm"
                         variant="outline"
+                        onClick={() => setSelectedArticle(n)}
+                      >
+                        view More
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
                         onClick={() => editNews(n)}
                       >
                         Edit
                       </Button>
+
                       <Button
                         size="sm"
                         variant="outline"
@@ -219,26 +243,40 @@ export default function AdminNews() {
           </CardContent>
         </Card>
         {subscribers.length > 0 && (
-          <Card className="rounded-2xl shadow-lg">
-            <CardContent className="p-6 space-y-4">
-              <h2 className="text-xl font-semibold text-blue-900">
+          <Card className="rounded-2xl shadow-lg w-full">
+            <CardContent className="p-4 sm:p-6 space-y-4">
+              <h2 className="text-lg sm:text-xl font-semibold text-blue-900">
                 Subscribers
               </h2>
-              <ul className="list-disc list-inside">
+
+              <ul className="space-y-3">
                 {subscribers.map((s) => (
                   <li
                     key={s._id}
-                    className="text-sm text-gray-700 flex justify-between "
+                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border rounded-xl p-3"
                   >
-                    {s.email}
-                    <Button
-                      className="mt-1"
-                      onClick={async () => {
-                        setSendEmailOpen(true);
-                      }}
-                    >
-                      Send Email
-                    </Button>
+                    {/* Email */}
+                    <p className="text-sm text-gray-700 break-all">{s.email}</p>
+
+                    {/* Actions */}
+                    <div className="flex gap-2 w-full sm:w-auto flex-col sm:flex-row">
+                      <Button
+                        size="sm"
+                        className="w-full sm:w-auto"
+                        onClick={() => setSendEmailOpen(true)}
+                      >
+                        Send Email
+                      </Button>
+
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="text-red-600 w-full sm:w-auto"
+                        onClick={() => deleteSubscriber(s._id)}
+                      >
+                        <Trash2 size={14} />
+                      </Button>
+                    </div>
                   </li>
                 ))}
               </ul>
@@ -248,6 +286,52 @@ export default function AdminNews() {
       </div>
       {sendEmailOpen && (
         <AdminSendEmail onClose={() => setSendEmailOpen(false)} />
+      )}
+      {selectedArticle && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Background Blur */}
+          <div
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            onClick={() => setSelectedArticle(null)}
+          />
+
+          {/* Modal Box */}
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.8, opacity: 0 }}
+            className="relative bg-white w-[95%] max-w-3xl max-h-[85vh] overflow-y-auto rounded-2xl shadow-2xl p-8 z-50"
+          >
+            {/* Close Button */}
+            <button
+              onClick={() => setSelectedArticle(null)}
+              className="absolute top-4 right-4 text-gray-500 hover:text-red-500 text-xl"
+            >
+              ✕
+            </button>
+
+            <Badge className="bg-blue-100 text-blue-700 mb-3">
+              {selectedArticle.category}
+            </Badge>
+
+            <h2 className="text-2xl font-bold text-blue-900 mb-4">
+              {selectedArticle.title}
+            </h2>
+
+            <div className="text-sm text-blue-700 flex gap-6 mb-6">
+              <span className="flex items-center gap-2">
+                <Calendar size={14} /> {selectedArticle.date}
+              </span>
+              <span className="flex items-center gap-2">
+                <Eye size={14} /> {selectedArticle.views}
+              </span>
+            </div>
+
+            <p className="text-gray-700 whitespace-pre-line leading-relaxed">
+              {selectedArticle.excerpt}
+            </p>
+          </motion.div>
+        </div>
       )}
     </div>
   );

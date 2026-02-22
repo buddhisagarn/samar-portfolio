@@ -4,9 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Mail, Phone, MapPin, Trash2, Save } from "lucide-react";
 import API from "@/api/api";
+import AdminSendEmail from "./AdminSendEmail";
 
 export default function AdminContact() {
   const [data, setData] = useState(null);
+  const [sendEmailOpen, setSendEmailOpen] = useState(false);
   API.get("/messages/messageinfo").then((res) => setData(res.data[0]));
 
   const [contactInfo, setContactInfo] = useState({
@@ -69,7 +71,7 @@ export default function AdminContact() {
           </h1> */}
 
         {/* Contact Info Settings */}
-        <Card className="rounded-2xl border-blue-200 shadow-lg">
+        <Card className="rounded-2xl border-blue-200 shadow-lg  ">
           <CardContent className="p-6 space-y-4">
             <h2 className="text-xl font-semibold text-blue-900">
               Contact Info
@@ -114,7 +116,7 @@ export default function AdminContact() {
 
         {/* Messages */}
         <Card className="rounded-2xl border-blue-200 shadow-lg ">
-          <CardContent className="p-6">
+          <CardContent className="p-6 ">
             <h2 className="text-xl font-semibold text-blue-900 mb-4">
               Messages
             </h2>
@@ -150,8 +152,17 @@ export default function AdminContact() {
                     <p className="text-xs uppercase tracking-wide text-blue-600 font-semibold mb-1">
                       Message
                     </p>
-                    <p className="text-sm text-gray-700 leading-relaxed">
+                    <p className="text-sm text-gray-700 leading-relaxed flex flex-col gap-2">
                       {msg.message}
+                      <Button
+                        size="sm"
+                        className="mt-7 w-fit"
+                        onClick={async () => {
+                          setSendEmailOpen(true);
+                        }}
+                      >
+                        Send Email
+                      </Button>
                     </p>
                   </div>
                 </CardContent>
@@ -160,6 +171,9 @@ export default function AdminContact() {
           </CardContent>
         </Card>
       </div>
+      {sendEmailOpen && (
+        <AdminSendEmail onClose={() => setSendEmailOpen(false)} />
+      )}
     </div>
   );
 }

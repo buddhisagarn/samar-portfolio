@@ -31,7 +31,10 @@ export function AutoGrowTextarea({ label, value, onChange }) {
 
 /* ---------------- MAIN COMPONENT ---------------- */
 export default function AdminHome() {
-  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    !!sessionStorage.getItem("token"),
+  );
+
   const [loading, setLoading] = useState(true);
 
   const [content, setContent] = useState({
@@ -71,7 +74,7 @@ export default function AdminHome() {
 
   const handleSave = async () => {
     try {
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token");
       const formData = new FormData();
 
       Object.entries(content).forEach(([key, value]) => {
@@ -106,7 +109,7 @@ export default function AdminHome() {
       {/* ADMIN PANEL */}
       <div className="bg-white rounded-2xl shadow-lg p-6">
         {Object.keys(content)
-          .filter((key) => key !== "image")
+          .filter((key) => key !== "image" && key !== "journey")
           .map((key) => (
             <AutoGrowTextarea
               key={key}
@@ -133,24 +136,6 @@ export default function AdminHome() {
             }}
           />
         </div>
-
-        {/* <div>
-          {journey.map((item, idx) => (
-            <div key={idx} className="mb-3">
-              <label className="block text-sm font-medium text-gray-600">
-                Journey {idx + 1}
-              </label>
-              <AutoGrowTextarea
-                value={item}
-                onChange={(e) => {
-                  const newJourney = [...journey];
-                  newJourney[idx] = e.target.value;
-                  setJourney(newJourney);
-                }}
-              />
-            </div>
-          ))}
-        </div> */}
 
         <div className="flex gap-3 mt-4">
           <button

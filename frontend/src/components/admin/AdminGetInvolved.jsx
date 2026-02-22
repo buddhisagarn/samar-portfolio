@@ -3,7 +3,7 @@ import API from "@/api/api";
 
 export default function AdminGetInvolved() {
   const [data, setData] = useState(null);
-  const token = localStorage.getItem("token");
+  const token = sessionStorage.getItem("token");
 
   useEffect(() => {
     API.get("/get-involved").then((res) => setData(res.data));

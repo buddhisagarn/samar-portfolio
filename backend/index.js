@@ -10,13 +10,13 @@ import aboutRoutes from "./Routes/about.js";
 import bookRoutes from "./Routes/book.js";
 import newsRoutes from "./Routes/news.js";
 import eventsRoutes from "./Routes/events.js";
-import subscribeRoutes from "./Routes/subscribe.js";
 import AdminSubscriber from "./Routes/adminRoutes.js";
 import getInvolvedRoutes from "./Routes/getInvolved.js";
 import aboutFooters from "./Routes/footer.js";
 
 //config file
 import { connectDB } from "./config/databaseConfig.js";
+import passport from "./config/passport.js";
 
 const app = express();
 
@@ -40,6 +40,7 @@ await connectDB();
 /* ================================
     Routes
 ================================ */
+app.use(passport.initialize());
 app.use("/api/auth", authRoutes);
 app.use("/api/content", contentRoutes);
 app.use("/api/messages", messageRoutes);
@@ -47,10 +48,12 @@ app.use("/api/about", aboutRoutes);
 app.use("/api/books", bookRoutes);
 app.use("/api/news", newsRoutes);
 app.use("/api/events", eventsRoutes);
-app.use("/api", subscribeRoutes);
 app.use("/api/admin", AdminSubscriber);
 app.use("/api/get-involved", getInvolvedRoutes);
 app.use("/api/footer", aboutFooters);
+app.get("/", (req, res) => {
+  res.send("API is running");
+});
 
 /* ================================
     Export for Vercel

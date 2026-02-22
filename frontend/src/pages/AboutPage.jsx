@@ -121,7 +121,8 @@ export default function AboutPage() {
             Let’s build something meaningful.
           </h3>
           <p className="text-gray-600 mb-6">
-            Open to collaborations, freelance work, and interesting ideas.
+            When politics speaks, we build. Less noise, more action. The future
+            won’t wait.
           </p>
           <button
             className="px-8 py-3 bg-blue-700 text-white rounded-xl shadow hover:bg-blue-800 transition cursor-pointer"

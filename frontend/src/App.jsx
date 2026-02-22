@@ -136,16 +136,6 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/admin-sendEmail"
-          element={
-            <ProtectedRoute>
-              <AdminLayout>
-                <AdminSendEmail />
-              </AdminLayout>
-            </ProtectedRoute>
-          }
-        />
       </Routes>
     </BrowserRouter>
   );

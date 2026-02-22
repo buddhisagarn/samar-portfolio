@@ -9,7 +9,7 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const initAuth = () => {
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token");
 
       if (token) {
         API.defaults.headers.common.Authorization = `Bearer ${token}`;
@@ -23,13 +23,13 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = (token) => {
-    localStorage.setItem("token", token);
+    sessionStorage.setItem("token", token);
     API.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     setUser({ role: "admin" });
   };
 
   const logout = () => {
-    localStorage.removeItem("token");
+    sessionStorage.removeItem("token");
     delete API.defaults.headers.common["Authorization"];
     setUser(null);
   };
